@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <canvas id="canvas" width="200px" height="200px"></canvas>
+    <script>
+      var canvas = document.getElementById("canvas");
+      var context = canvas.getContext("2d");
+
+      var img = new Image();
+      img.src = "image.png";
+      img.width="1033px;"
+      img.width="344px;"
+      img.onload = function () {
+        // 이미지 자르기
+        var croppedImage = cropImage(img, 0, 0, 344, 344);
+        
+        // 자른 이미지를 canvas에 그리기
+        context.drawImage(croppedImage, 0, 0, canvas.width, canvas.height);
+      };
+
+      function cropImage(image, startX, startY, endX, endY) {
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext("2d");
+        canvas.width = endX - startX;
+        canvas.height = endY - startY;
+        context.drawImage(
+          image,
+          startX,
+          startY,
+          canvas.width,
+          canvas.height,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        return canvas;
+      }
+    </script>
+  </body>
+</html>

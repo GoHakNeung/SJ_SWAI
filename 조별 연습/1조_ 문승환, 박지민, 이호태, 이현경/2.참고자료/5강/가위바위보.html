@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>가위바위보 게임</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #f1f1f1;
+            height: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            background-color: #ffffff;
+            height: 60%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            height: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #player1Score, #player2Score {
+            font-size: 24px;
+            margin: 0 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0080ff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        #player1Imag{
+           border: 1px solid red;
+           width:344px;
+           height:401px;
+           }
+        #player2Imag{
+           border: 1px solid red;
+           width:344px;
+           height:401px;
+          
+
+           
+        }
+    </style>
+    <script>
+        var player1Score = 0;
+        var player2Score = 0;
+
+        function play(player1Choice) {
+            var choices = ['가위', '바위', '보'];
+            var player2Choice = choices[Math.floor(Math.random() * 3)];
+
+            var player1ScoreElement = document.getElementById('player1Score');
+            var player2ScoreElement = document.getElementById('player2Score');
+
+            var resultMessage = document.getElementById('resultMessage');
+            
+
+            var player1Image = document.getElementById('player1Image');
+            var player2Image = document.getElementById('player2Image');
+
+            player1Image.setAttribute('background-image',"url('가위바위보.png')")
+            player2Image.setAttribute('background-image', url('가위바위보.png'))
+
+            if (
+                (player1Choice === '가위' && player2Choice === '보') ||
+                (player1Choice === '바위' && player2Choice === '가위') ||
+                (player1Choice === '보' && player2Choice === '바위')
+            ) {
+                player1Score++;
+                player1ScoreElement.textContent = player1Score;
+                resultMessage.textContent = '플레이어 1 승리!';
+            } else if (
+                (player1Choice === '가위' && player2Choice === '바위') ||
+                (player1Choice === '바위' && player2Choice === '보') ||
+                (player1Choice === '보' && player2Choice === '가위')
+            ) {
+                player2Score++;
+                player2ScoreElement.textContent = player2Score;
+                resultMessage.textContent = '플레이어 2 승리!';
+            } else {
+                resultMessage.textContent = '무승부!';
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div id="player1Score">0</div>
+        <div id="player2Score">0</div>
+    </header>
+
+    <main>
+        <div>
+            <h2>플레이어 1</h2>
+            <div id="player1Image">dd</div>
+        </div>
+        <div>
+            <h2>플레이어 2</h2>
+            <div id="player2Image"></div>
+        </div>
+    </main>
+
+    <footer>
+        <button class="button" onclick="play('가위')">가위</button>
+        <button class="button" onclick="play('바위')">바위</button>
+        <button class="button" onclick="play('보')">보</button>
+    </footer>
+</body>
+</html>
