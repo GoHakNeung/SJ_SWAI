@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Noise Measurement</title>
+    <style>
+      #circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: yellow;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #dbBox {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 50px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="circle"></div>
+    <div id="dbBox"></div>
+
+    <script>
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(function (stream) {
+          var audioContext = new AudioContext();
+          var audioInput = audioContext.createMediaStreamSource(stream);
+          var analyser = audioContext.createAnalyser();
+
+          // 분석에 필요한 설정
+          analyser.fftSize = 2048;
+          var bufferLength = analyser.frequencyBinCount;
+          var dataArray = new Uint8Array(bufferLength);
+
+          audioInput.connect(analyser);
+
+          function updateNoiseLevel() {
+            analyser.getByteFrequencyData(dataArray);
+
+            var sum = 0;
+            for (var i = 0; i < bufferLength; i++) {
+              var value = dataArray[i] / 255; // 정규화된 값
+              sum += value;
+            }
+
+            var average = sum / bufferLength;
+            var db = average * 200; // 범위를 0부터 200으로 조정
+
+            // 원의 크기 및 색상 업데이트
+            updateCircleSize(db);
+
+            // 소음 값 표시 업데이트
+            updateDbBox(db);
+          }
+          setInterval(() => {
+            updateNoiseLevel();
+          }, 100);
+          updateNoiseLevel();
+        })
+        .catch(function (err) {
+          console.error("마이크 접근 권한을 얻을 수 없습니다:", err);
+        });
+
+      function updateCircleSize(db) {
+        var circle = document.getElementById("circle");
+        var size = db; // 크기를 소음 값에 비례하게 설정합니다.
+        circle.style.width = size + "px";
+        circle.style.height = size + "px";
+
+        if (db >= 150) {
+          circle.style.backgroundColor = "red";
+        } else if (db >= 75) {
+          circle.style.backgroundColor = "orange";
+        } else {
+          circle.style.backgroundColor = "yellow";
+        }
+      }
+
+      function updateDbBox(db) {
+        var dbBox = document.getElementById("dbBox");
+        dbBox.textContent = "소음 레벨: " + db.toFixed(0) + " dB";
+      }
+    </script>
+  </body>
+</html>

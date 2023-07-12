@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>우유 다 먹었니?</title>
+    <style>
+      body {
+        @font-face {
+          font-family: "HANAMDAUM";
+          src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/HANAMDAUM.woff2")
+            format("woff2");
+          font-weight: 400;
+          font-style: normal;
+        }
+        background-color: rgb(232, 234, 190);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+      }
+
+      .container {
+        font-family: "HANAMDAUM";
+        src: url("HANAMDAUM.ttf") format("truetype");
+        font-weight: bold;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 10px;
+        max-width: 80vw;
+      }
+
+      .box {
+        font-family: "MaruBuriBold";
+        width: 100px;
+        height: 100px;
+        background-color: mintcream;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.5rem;
+        margin: 10px;
+      }
+
+      .smile {
+        background-image: url("smile.jpg");
+        background-size: cover;
+      }
+
+      h1 {
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>우유 다 먹었니?</h1>
+    <div class="container" id="boxContainer"></div>
+
+    <script>
+      var boxContainer = document.getElementById("boxContainer");
+
+      for (var i = 1; i <= 24; i++) {
+        var box = document.createElement("div");
+        box.className = "box";
+        box.innerText = i;
+
+        box.addEventListener("click", function () {
+          var box = this;
+
+          if (box.classList.contains("smile")) {
+            box.innerText = box.dataset.number;
+            box.classList.remove("smile");
+          } else {
+            box.dataset.number = box.innerText;
+            box.innerText = "";
+            box.classList.add("smile");
+          }
+        });
+
+        boxContainer.appendChild(box);
+      }
+    </script>
+  </body>
+</html>

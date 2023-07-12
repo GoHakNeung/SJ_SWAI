@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+<head>
+    <title>선생님 다했어요</title>
+    <style>
+        /* CSS 스타일링 */
+        @font-face {
+            font-family: '강원교육튼튼';
+            src: url('강원교육튼튼.ttf');
+        }
+    
+        body {
+            text-align: center;
+        }
+    
+        h1 {
+            margin-top: 50px;
+            font-size: 2rem;
+            font-family: '강원교육튼튼', sans-serif;
+        }
+    
+        .button-row {
+            text-align: center;
+        }
+    
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    
+        .button {
+            width: 200px;
+            height: 100px;
+            padding: 20px;
+            margin: 10px;
+            font-size: 2rem;
+            font-family: '강원교육튼튼', sans-serif;
+            background-color: #FFC0CB;
+            /* 핑크색 */
+        }
+    </style>
+    </head>
+    
+    <body>
+        <h1>선생님 다했어요</h1>
+    
+        <div class="button-container" id="buttonContainer"></div>
+    
+        <audio id="dingdong.mp3">
+            <source src="dingdong.mp3">
+        </audio>
+    
+        <script>
+            // JavaScript 코드
+            const buttonContainer = document.getElementById('buttonContainer');
+            const buttonTexts = [
+                '김동현', '김민경', '김민주', '김선민', '김윤호', '김지혁', '박래호', '박소윤', '박준상', '박해준',
+                '박현서', '선우준', '손석우', '이서호', '이예서', '이채연', '임승후', '정시현', '한예지', '정주애', '신지율'
+            ];
+
+            const dingdongAudio = document.getElementById('dingdong.mp3');
+
+            buttonTexts.forEach((text, index) => {
+                const button = document.createElement('button');
+                button.textContent = text;
+                button.classList.add('button');
+                buttonContainer.appendChild(button);
+
+                if ((index + 1) % 5 === 0 && index < 15) {
+                    const lineBreak = document.createElement('br');
+                    buttonContainer.appendChild(lineBreak);
+                }
+
+                button.addEventListener('click', () => {
+                    if (button.textContent === '나는 끝') {
+                        button.textContent = text;
+                        button.style.backgroundColor = '#FFC0CB'; // 원래의 배경색 (핑크색)
+                    } else {
+                        button.textContent = '나는 끝';
+                        button.style.backgroundColor = '#FFFF00'; // 노란색
+                        playDingdongSound();
+                    }
+                });
+            });
+        </script>
+    </body>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>자리 바꾸기</title>
+    <style>
+      .container {
+        text-align: center;
+        margin-top: 50px;
+      }
+
+      .row {
+        margin-bottom: 10px;
+      }
+
+      .box {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        border: 2px solid black;
+        text-align: center;
+        font-size: 24px;
+        line-height: 80px;
+      }
+
+      .button {
+        display: inline-block;
+        width: 200px;
+        height: 50px;
+        margin-top: 20px;
+        background-color: red;
+        color: white;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .settings {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        margin-left: 10px;
+        background-color: blue;
+        color: white;
+        font-size: 18px;
+        border: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="box">1</div>
+        <div class="box">2</div>
+        <div class="box">3</div>
+        <div class="box">4</div>
+        <div class="box">5</div>
+      </div>
+      <div class="row">
+        <div class="box">6</div>
+        <div class="box">7</div>
+        <div class="box">8</div>
+        <div class="box">9</div>
+        <div class="box">10</div>
+      </div>
+      <div class="row">
+        <div class="box">11</div>
+        <div class="box">12</div>
+        <div class="box">13</div>
+        <div class="box">14</div>
+        <div class="box">15</div>
+      </div>
+      <div class="row">
+        <div class="box">16</div>
+        <div class="box">17</div>
+        <div class="box">18</div>
+        <div class="box">19</div>
+        <div class="box">20</div>
+      </div>
+      <div class="row">
+        <div class="box">21</div>
+        <div class="box">22</div>
+        <div class="box">23</div>
+        <div class="box">24</div>
+        <div class="box">25</div>
+      </div>
+      <button class="button" onclick="shuffleNumbers()">자리 바꾸기</button>
+      <button class="settings" onclick="openSettings()">설정</button>
+    </div>
+
+    <script>
+      var numbers = [];
+      var boxes = document.getElementsByClassName("box");
+
+      // 초기화 함수
+      function init() {
+        for (var i = 0; i < boxes.length; i++) {
+          numbers.push(i + 1);
+        }
+        shuffleNumbers();
+      }
+
+      // 숫자 배열 섞기
+      function shuffleNumbers() {
+        for (var i = numbers.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = numbers[i];
+          numbers[i] = numbers[j];
+          numbers[j] = temp;
+        }
+        updateBoxes();
+      }
+
+      // 숫자 박스 업데이트
+      function updateBoxes() {
+        for (var i = 0; i < boxes.length; i++) {
+          boxes[i].textContent = numbers[i];
+        }
+      }
+
+      // 설정 창 열기
+      function openSettings() {
+        var targetBox = prompt(
+          "몇 번째 박스에 어떤 숫자를 설정하시겠습니까?\n박스 번호와 숫자를 입력해주세요. (예: 1 10)"
+        );
+        if (targetBox) {
+          var inputArr = targetBox.split(" ");
+          var boxIndex = parseInt(inputArr[0]) - 1;
+          var number = parseInt(inputArr[1]);
+          if (
+            !isNaN(boxIndex) &&
+            !isNaN(number) &&
+            boxIndex >= 0 &&
+            boxIndex < boxes.length
+          ) {
+            if (numbers.indexOf(number) === -1) {
+              numbers[boxIndex] = number;
+              updateBoxes();
+            } else {
+              alert("이미 사용된 숫자입니다. 다른 숫자를 선택해주세요.");
+            }
+          } else {
+            alert("올바른 박스 번호와 숫자를 입력해주세요.");
+          }
+        }
+      }
+
+      // 초기화 함수 호출
+      init();
+    </script>
+  </body>
+</html>

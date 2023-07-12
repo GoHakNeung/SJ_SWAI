@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>두 공간 HTML</title>
+    <style>
+        body {
+            background-color: rgb(232, 234, 190);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            @font-face {
+                font-family: "HANAMDAUM";
+                src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/HANAMDAUM.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+            }
+
+            font-weight: bold;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-width: 80vw;
+        }
+
+        .box {
+            @font-face {
+                font-family: "HANAMDAUM";
+                src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/HANAMDAUM.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+            }
+
+            width: 100px;
+            height: 100px;
+            background-color: mintcream;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 2rem;
+            margin: 10px;
+        }
+
+        .smile {
+            background-image: url("smile.jpg");
+            background-size: cover;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #leftTitle,
+        #rightTitle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+
+        .leftContainer {
+            background-color: rgb(226, 232, 118);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .rightContainer {
+            background-color: rgb(240, 231, 130);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .leftContainer {
+            margin-right: 100px;
+        }
+
+        .rightContainer {
+            margin-left: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="leftContainer">
+            <h1 id="leftTitle">우유 먹었니?</h1>
+            <div class="container" id="leftBoxContainer"></div>
+        </div>
+
+        <div class="rightContainer">
+            <h1 id="rightTitle">수학 익힘책 미션 클리어</h1>
+            <div class="container" id="rightBoxContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        var leftBoxContainer = document.getElementById("leftBoxContainer");
+        var rightBoxContainer = document.getElementById("rightBoxContainer");
+
+        for (var i = 1; i <= 22; i++) {
+            var leftBox = document.createElement("div");
+            leftBox.className = "box";
+            leftBox.innerText = i;
+
+            leftBox.addEventListener("click", function () {
+                var box = this;
+
+                if (box.classList.contains("smile")) {
+                    box.innerText = box.dataset.number;
+                    box.classList.remove("smile");
+                } else {
+                    box.dataset.number = box.innerText;
+                    box.innerText = "";
+                    box.classList.add("smile");
+                }
+            });
+
+            leftBoxContainer.appendChild(leftBox);
+
+            var rightBox = document.createElement("div");
+            rightBox.className = "box";
+            rightBox.innerText = i;
+
+            rightBox.addEventListener("click", function () {
+                var box = this;
+
+                if (box.classList.contains("smile")) {
+                    box.innerText = box.dataset.number;
+                    box.classList.remove("smile");
+                } else {
+                    box.dataset.number = box.innerText;
+                    box.innerText = "";
+                    box.classList.add("smile");
+                }
+            });
+
+            rightBoxContainer.appendChild(rightBox);
+        }
+    </script>
+</body>
+
+</html>
