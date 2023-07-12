@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>청기백기 게임</title>
+  </head>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .box {
+      width: 800vw;
+      height: 200vh;
+    }
+    .blue {
+      background-image: url("images/2.jpg");
+    }
+    .red {
+      background-image: url("images/4.jpg");
+    }
+  </style>
+  <body>
+    <h1>청기백기 게임</h1>
+    <div class="container">
+      <div class="box red" id="left"></div>
+      <div class="box blue" id="right"></div>
+    </div>
+    <button onclick="startSpeechRecognition()">음성 입력 시작</button>
+    <p id="transcript"></p>
+    <script>
+      function startSpeechRecognition() {
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "ko-KR";
+        recognition.continuous = true; // 연속적인 음성 인식을 위해 설정
+        recognition.onresult = function (event) {
+          let transcript = "";
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              // 최종 결과인 경우에만 처리
+              transcript += event.results[i][0].transcript;
+            }
+          }
+
+          document.getElementById("transcript").textContent = transcript;
+
+          // 청기 올리기 또는 내리기
+          if (
+            transcript.includes("청기 올려") ||
+            transcript.includes("척기 올려") ||
+            transcript.includes("전기 올려") ||
+            transcript.includes("철기 올려")
+          ) {
+            document.getElementById("right").style.backgroundImage =
+              "url('images/1.jpg')";
+          } else if (
+            transcript.includes("청기 올리지마") ||
+            transcript.includes("척기 올리지마") ||
+            transcript.includes("전기 올리지마") ||
+            transcript.includes("철기 올리지마") ||
+            transcript.includes("청기 올리지말고") ||
+            transcript.includes("척기 올리지말고") ||
+            transcript.includes("철기 올리지말고")
+          ) {
+            document.getElementById("right").style.backgroundImage =
+              "url('images/2.jpg')";
+          }
+
+          // 백기 올리기 또는 내리기
+          if (
+            transcript.includes("백기 올려") ||
+            transcript.includes("뱅기 올려") ||
+            transcript.includes("밸기 올려")
+          ) {
+            document.getElementById("left").style.backgroundImage =
+              "url('images/3.jpg')";
+          } else if (
+            transcript.includes("백기 올리지마") ||
+            transcript.includes("뱅기 올리지마") ||
+            transcript.includes("밸기 올리지마") ||
+            transcript.includes("백기 올리지말고") ||
+            transcript.includes("뱅기 올리지말고") ||
+            transcript.includes("밸기 올리지말고")
+          ) {
+            document.getElementById("left").style.backgroundImage =
+              "url('images/4.jpg')";
+          }
+        };
+        recognition.start();
+      }
+    </script>
+  </body>
+</html>
