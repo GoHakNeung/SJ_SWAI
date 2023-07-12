@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    #volume {
+      font-size: 24px;
+    }
+
+    #message {
+      font-size: 18px;
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>누가 큰 소리를 내었는가</h1>
+
+  <p>소음 크기: <span id="volume">-</span></p>
+
+  <p id="message"></p>
+
+  <img id="image" style="display: none;" src="" alt="Noisy Image">
+
+  <script>
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function (stream) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const audioSource = audioContext.createMediaStreamSource(stream);
+        const analyser = audioContext.createAnalyser();
+        audioSource.connect(analyser);
+
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function update() {
+          analyser.getByteFrequencyData(dataArray);
+
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            sum += dataArray[i];
+          }
+
+          const average = sum / bufferLength;
+          document.getElementById("volume").textContent = average.toFixed(2);
+
+          if (average > 30) {
+            document.getElementById("message").textContent = "시끄러워ㅠㅠ";
+            document.getElementById("image").src = "https://t1.daumcdn.net/cfile/tistory/26741D5058626EC30C";
+            document.getElementById("image").style.display = "block";
+          } else {
+            document.getElementById("message").textContent = "우리반 최고^0^";
+            document.getElementById("image").src = "https://item.kakaocdn.net/do/730362c7a64b7898234667c6d1d428537154249a3890514a43687a85e6b6cc82";
+            document.getElementById("image").style.display = "none";
+          }
+
+          requestAnimationFrame(update);
+        }
+
+        update();
+
+      })
+      .catch(function (error) {
+        console.error("Error accessing microphone:", error);
+      });
+  </script>
+</body>
+
+</html>

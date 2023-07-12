@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Slow Sound Check</title>
+  <script>
+    var count = 0;
+    
+    function checkSound() {
+      var soundLevel = parseInt(document.getElementById("soundInput").value);
+    
+      if (soundLevel > 30) {
+        count++;
+        if (count >= 3) {
+          document.getElementById("message").innerHTML = "쉬는 시간 끝";
+          count = 0;
+        }
+      } else {
+        count = 0;
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Slow Sound Check</h1>
+  <label for="soundInput">Enter the sound level:</label>
+  <input type="number" id="soundInput"><br><br>
+  <button onclick="checkSound()">Check</button>
+  <p id="message"></p>
+</body>
+</html>
