@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>우리 반 소음 측정기</title>
+    <style>
+      #title {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+      }
+
+      #measurement {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 36px;
+      }
+
+      #graph {
+        margin-top: 50px;
+        text-align: center;
+        position: relative;
+      }
+
+      #overlayImage {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="title">
+      <h1>왜 이리 시끄러운 것이냐</h1>
+    </div>
+    <div id="measurement">
+      <p id="measurementValue">0 dB</p>
+    </div>
+    <div id="graph">
+      <canvas id="graphCanvas" width="600" height="300"></canvas>
+      <img id="overlayImage" src="Quiet.jpg" alt="Overlay Image" />
+    </div>
+
+    <script>
+      // 마이크로부터 소리 측정 및 그래프 업데이트를 위한 함수
+      function startMeasurement(stream) {
+        var audioContext = new AudioContext();
+        var analyser = audioContext.createAnalyser();
+        var microphone = audioContext.createMediaStreamSource(stream);
+        var canvas = document.getElementById("graphCanvas");
+        var canvasCtx = canvas.getContext("2d");
+        var bellAudio = new Audio("bell.mp3"); // 벨소리 오디오 파일 경로
+
+        microphone.connect(analyser);
+        analyser.fftSize = 2048;
+        var bufferLength = analyser.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+        var timeArray = [];
+        var dBArray = [];
+        var dBThreshold = 20; // dB 임계값
+        var durationThreshold = 1000; // 지속 시간 임계값 (1초)
+
+        var isAboveThreshold = false;
+        var aboveThresholdStartTime = 0;
+
+        function measureSound() {
+          analyser.getByteTimeDomainData(dataArray);
+
+          var sum = 0;
+          for (var i = 0; i < bufferLength; i++) {
+            var amplitude = (dataArray[i] - 128) / 128.0;
+            sum += amplitude * amplitude;
+          }
+          var rms = Math.sqrt(sum / bufferLength);
+          var dBValue = 20 * Math.log10(rms);
+
+          var correcteddBValue = dBValue + 45;
+
+          if (correcteddBValue < 0) {
+            correcteddBValue = 0;
+          }
+
+          var currentTime = new Date().getTime();
+          timeArray.push(currentTime);
+          dBArray.push(correcteddBValue);
+          if (dBArray.length > 300) {
+            dBArray.shift();
+          }
+
+          document.getElementById("measurementValue").textContent =
+            correcteddBValue.toFixed(2) + " dB";
+          updateGraph();
+
+          // dB 임계값 이상인 경우 처리
+          if (correcteddBValue > dBThreshold) {
+            if (!isAboveThreshold) {
+              isAboveThreshold = true;
+              aboveThresholdStartTime = currentTime;
+            } else {
+              var aboveThresholdDuration =
+                currentTime - aboveThresholdStartTime;
+              if (aboveThresholdDuration >= durationThreshold) {
+                bellAudio.play();
+                showOverlayImage();
+                setTimeout(hideOverlayImage, 6000); // 6초 후에 그림 감추기
+              }
+            }
+          } else {
+            isAboveThreshold = false;
+          }
+
+          requestAnimationFrame(measureSound);
+        }
+
+        function updateGraph() {
+          canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(0, canvas.height / 2);
+          canvasCtx.lineTo(canvas.width, canvas.height / 2);
+          canvasCtx.strokeStyle = "#bbb";
+          canvasCtx.stroke();
+
+          var xScale =
+            canvas.width / (timeArray[timeArray.length - 1] - timeArray[0]);
+          var yScale = canvas.height / 100;
+
+          // y축 눈금 표시
+          for (var i = 10; i <= 100; i += 10) {
+            var yPos = canvas.height / 2 - i * yScale;
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, yPos);
+            canvasCtx.lineTo(canvas.width, yPos);
+            canvasCtx.strokeStyle = "#ccc";
+            canvasCtx.stroke();
+            canvasCtx.fillStyle = "#000";
+            canvasCtx.font = "12px Arial";
+            canvasCtx.fillText(i + " dB", 10, yPos - 5);
+          }
+
+          for (var i = 0; i < timeArray.length; i++) {
+            var xPos = (timeArray[i] - timeArray[0]) * xScale;
+            var yPos = canvas.height / 2 - dBArray[i] * yScale;
+
+            if (i === 0) {
+              canvasCtx.moveTo(xPos, yPos);
+            } else {
+              canvasCtx.lineTo(xPos, yPos);
+            }
+          }
+
+          canvasCtx.strokeStyle = "#f00";
+          canvasCtx.lineWidth = 2;
+          canvasCtx.stroke();
+        }
+
+        function showOverlayImage() {
+          var overlayImage = document.getElementById("overlayImage");
+          overlayImage.style.display = "block";
+        }
+
+        function hideOverlayImage() {
+          var overlayImage = document.getElementById("overlayImage");
+          overlayImage.style.display = "none";
+        }
+
+        measureSound();
+      }
+
+      // 마이크 사용 권한 요청 및 소리 측정 시작
+      function initialize() {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then(function (stream) {
+            startMeasurement(stream);
+          })
+          .catch(function (err) {
+            console.error("마이크 접근을 위한 권한을 허용해주세요.", err);
+          });
+      }
+
+      // 페이지 로드 시 초기화 함수 호출
+      window.onload = function () {
+        initialize();
+      };
+    </script>
+  </body>
+</html>

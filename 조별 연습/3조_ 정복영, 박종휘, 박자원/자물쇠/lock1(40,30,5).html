@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* 캔버스의 스타일을 설정합니다. */
+      /* 캔버스의 스타일을 설정합니다. */
+      #canvas {
+        margin: 0px;
+        position: absolute; /* or relative */
+        top: 0px; /* adjust as needed */
+        left: 0px; /* adjust as needed */
+      }
+    </style>
+  </head>
+  <body>
+    <input
+      id="select-button"
+      type="button"
+      value="선택"
+      style="
+        z-index: 2;
+        position: absolute;
+        top: 280px;
+        left: 210px;
+        background-color: transparent;
+        border-color: red;
+        font-size: 30px;
+      "
+    />
+    <input
+      id="reset-button"
+      type="button"
+      value="초기화"
+      style="
+        z-index: 2;
+        position: absolute;
+        top: 130px;
+        left: 400px;
+        border-color: aqua;
+        font-size: 18px;
+      "
+    />
+
+    <!-- 캔버스 요소를 생성합니다. -->
+    <canvas id="canvas" width="500" height="600"></canvas>
+
+    <!-- 자바스크립트 코드를 삽입합니다. -->
+    <script>
+      // 캔버스 요소와 컨텍스트를 가져옵니다.
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      // 원의 중심 좌표와 반지름을 설정합니다.
+      var x = canvas.width / 2;
+      var y = canvas.height / 2;
+      var r = 150;
+
+      // 원을 그립니다.
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = "black";
+      ctx.fill();
+      ctx.closePath();
+
+      // 빨간색 눈금을 그립니다.
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 1;
+
+      // 회색 원의 반지름을 설정합니다.
+      var r2 = 160;
+
+      // 회색 원을 그립니다.
+      ctx.beginPath();
+      ctx.arc(x, y, r2, 0, 2 * Math.PI);
+      ctx.fillStyle = "gray";
+      ctx.fill();
+      ctx.closePath();
+
+      // 검정색 원을 다시 그립니다.
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = "black";
+      ctx.fill();
+      ctx.closePath();
+
+      // 150개의 눈금을 각도별로 그립니다.
+      for (var i = 0; i < 60; i++) {
+        // 각도를 라디안으로 변환합니다.
+        var angle = i * ((2 * Math.PI) / 60);
+
+        // 눈금의 시작점과 끝점을 계산합니다.
+        var x1 = x + r * Math.cos(angle);
+        var y1 = y + r * Math.sin(angle);
+        var x2 = x + (r - 8) * Math.cos(angle);
+        var y2 = y + (r - 8) * Math.sin(angle);
+
+        // 눈금의 길이를 조절합니다.
+        if (i % 5 === 0) {
+          x2 -= Math.cos(angle) * 8;
+          y2 -= Math.sin(angle) * 8;
+        }
+
+        // 눈금을 그립니다.
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.closePath();
+      }
+
+      // 숫자 표시를 합니다.
+      ctx.fillStyle = "white";
+      ctx.font = "20px Arial";
+
+      // 각도별로 숫자를 그립니다.
+      for (var i = 0; i < 12; i++) {
+        // 각도를 라디안으로 변환합니다.
+        var angle = i * (Math.PI / 6);
+
+        // 숫자의 위치를 계산합니다.
+        var x3 = x + (r - 25) * Math.cos(angle);
+        var y3 = y + (r - 25) * Math.sin(angle);
+
+        // 숫자를 그립니다.
+        ctx.fillText(i * 5, x3 - 8, y3 + 4);
+      }
+
+      // 회색 원(다이얼)을 그립니다.
+      var r2 = r / 2; // 반지름은 절반
+      var tickAngle = (0 * Math.PI) / 180; // 빨간색 눈금의 각도를 0도로 설정합니다.
+      ctx.beginPath();
+      ctx.arc(x, y, r2, 0, 2 * Math.PI); // 원을 그립니다.
+      ctx.fillStyle = "gray"; // 회색으로 채웁니다.
+      ctx.fill();
+      ctx.closePath();
+
+      // 빨간색 눈금을 그립니다.
+      var x4 = x + r2 * Math.cos(tickAngle); // 눈금의 시작점의 x좌표
+      var y4 = y + r2 * Math.sin(tickAngle); // 눈금의 시작점의 y좌표
+      var x5 = x + (r2 - 16) * Math.cos(tickAngle); // 눈금의 끝점의 x좌표
+      var y5 = y + (r2 - 16) * Math.sin(tickAngle); // 눈금의 끝점의 y좌표
+      ctx.beginPath();
+      ctx.moveTo(x4, y4); // 눈금의 시작점으로 이동합니다.
+      ctx.lineTo(x5, y5); // 눈금의 끝점으로 선을 그립니다.
+      ctx.strokeStyle = "red"; // 빨간색으로 설정합니다.
+      ctx.lineWidth = 2; // 선의 굵기를 2로 설정합니다.
+      ctx.stroke(); // 선을 그립니다.
+      ctx.closePath();
+
+      // 검정색 삼각형을 그립니다.
+      var t = 20 * 1.5; // 삼각형의 한 변의 길이
+      var d = 30; // 삼각형과 원의 거리
+      var x6 = x - r - d; // 왼쪽 삼각형의 중심 x좌표
+      var y6 = y; // 왼쪽 삼각형의 중심 y좌표
+      var x7 = x + r + d; // 오른쪽 삼각형의 중심 x좌표
+      var y7 = y; // 오른쪽 삼각형의 중심 y좌표
+
+      // 오른쪽 삼각형을 그립니다.
+      ctx.beginPath();
+      ctx.moveTo(x7 + t / 2, y7); // 오른쪽 꼭지점으로 이동합니다.
+      ctx.lineTo(x7 - t / 2, y7 - (t / 2) * Math.sqrt(3)); // 아래 왼쪽 꼭지점으로 선을 그립니다.
+      ctx.lineTo(x7 - t / 2, y7 + (t / 2) * Math.sqrt(3)); // 위 왼쪽 꼭지점으로 선을 그립니다.
+      ctx.closePath(); // 오른쪽 꼭지점으로 선을 그립니다.
+      ctx.fillStyle = "black"; // 검정색으로 설정합니다.
+      ctx.fill(); // 채웁니다.
+
+      // 다이얼을 회전하는 함수를 정의합니다.
+      function rotateTick(direction) {
+        // 각도를 변경하는 상수를 설정합니다.
+        var angleChange = (2 * Math.PI) / 12; // 왼쪽 방향으로 5도 회전할 때의 각도 변화
+        var angleChange2 = (2 * Math.PI) / 12; // 오른쪽 방향으로 5도 회전할 때의 각도 변화
+
+        if (direction === "left") {
+          // 왼쪽 방향이면
+          tickAngle -= angleChange; // 각도를 반시계 방향으로 angleChange만큼 감소시킵니다.
+        } else if (direction === "right") {
+          // 오른쪽 방향이면
+          tickAngle += angleChange2; // 각도를 시계 방향으로 angleChange2만큼 증가시킵니다.
+        }
+        // 회색 원과 빨간색 눈금을 다시 그립니다.
+        ctx.clearRect(r2, r2, r2, r2); // 회색 원 영역을 지웁니다.
+        ctx.beginPath();
+        ctx.arc(x, y, r2, 0, 2 * Math.PI); // 원을 그립니다.
+        ctx.fillStyle = "gray"; // 회색으로 채웁니다.
+        ctx.closePath();
+        ctx.fill();
+
+        var x4 = x + r2 * Math.cos(tickAngle); // 눈금의 시작점의 x좌표
+        var y4 = y + r2 * Math.sin(tickAngle); // 눈금의 시작점의 y좌표
+        var x5 = x + (r2 - 16) * Math.cos(tickAngle); // 눈금의 끝점의 x좌표
+        var y5 = y + (r2 - 16) * Math.sin(tickAngle); // 눈금의 끝점의 y좌표
+        ctx.beginPath();
+        ctx.moveTo(x4, y4); // 눈금의 시작점으로 이동합니다.
+        ctx.lineTo(x5, y5); // 눈금의 끝점으로 선을 그립니다.
+        ctx.strokeStyle = "red"; // 빨간색으로 설정합니다.
+        ctx.lineWidth = 2; // 선의 굵기를 2로 설정합니다.
+        ctx.stroke(); // 선을 그립니다.
+        ctx.closePath();
+
+        // 세 개의 사각형을 다시 그립니다. (rotateTick 함수 안으로 옮겼습니다.)
+        ctx.fillStyle = "white"; // 흰색으로 설정합니다.
+        drawRectangles(); // 세 개의 사각형을 그리는 함수를 호출합니다.
+
+        // 세 개의 사각형에 숫자가 있으면 다시 씁니다. (rotateTick 함수 안으로 옮겼습니다.)
+        ctx.fillStyle = "black"; // 검정색으로 설정합니다.
+        ctx.font = "20px Arial"; // 폰트를 설정합니다.
+        writeNumbers(); // 세 개의 사각형에 숫자를 쓰는 함수를 호출합니다.
+      }
+
+      // 선택 버튼을 가져옵니다.
+      var selectButton = document.getElementById("select-button");
+
+      // 선택 버튼에 클릭 이벤트 리스너를 추가합니다.
+      selectButton.addEventListener("click", function () {
+        // 현재 빨간색 눈금이 가리키는 숫자를 구합니다.
+        var number = Math.round(tickAngle / ((2 * Math.PI) / 12)) * 5;
+
+        // 숫자를 콘솔에 출력합니다. (나중에 삭제할 수 있습니다.)
+        console.log(number);
+      });
+
+      // 세 개의 사각형의 좌표와 크기를 설정합니다.
+      var rectX = x - r - d - t + 10; // 세 개의 사각형의 왼쪽 x좌표
+      var rectY = y - r - d - t + 400; // 첫 번째 사각형의 위쪽 y좌표
+      var rectW = t * 2; // 세 개의 사각형의 너비
+      var rectH = t * 2; // 세 개의 사각형의 높이
+      var rectS = t / 2 + 3; // 세 개의 사각형 사이의 간격
+
+      // 세 개의 사각형에 해당하는 숫자를 저장할 변수를 만듭니다. 초기값은 null입니다.
+      var num1 = null;
+      var num2 = null;
+      var num3 = null;
+
+      // 세 개의 사각형을 캔버스에 그립니다.
+      ctx.fillStyle = "white"; // 흰색으로 설정합니다.
+      ctx.fillRect(rectX + 100, rectY, rectW, rectH); // 첫 번째 사각형을 그립니다. (x좌표에 100을 더합니다.)
+      ctx.fillRect(rectX + rectW + rectS + 100, rectY, rectW, rectH); // 두 번째 사각형을 그립니다. (x좌표에 100을 더하고 가로 길이와 간격을 더합니다.)
+      ctx.fillRect(rectX + (rectW + rectS) * 2 + 100, rectY, rectW, rectH); // 세 번째 사각형을 그립니다. (x좌표에 100을 더하고 가로 길이와 간격을 두 배 더합니다.)
+
+      // 세 개의 사각형의 윤곽선을 검정색으로 표시합니다.
+      ctx.strokeStyle = "black"; // 검정색으로 설정합니다.
+      ctx.strokeRect(rectX + 100, rectY, rectW, rectH); // 첫 번째 사각형의 윤곽선을 그립니다. (x좌표에 100을 더합니다.)
+      ctx.strokeRect(rectX + rectW + rectS + 100, rectY, rectW, rectH); // 두 번째 사각형의 윤곽선을 그립니다. (x좌표에 100을 더하고 가로 길이와 간격을 더합니다.)
+      ctx.strokeRect(rectX + (rectW + rectS) * 2 + 100, rectY, rectW, rectH); // 세 번째 사각형의 윤곽선을 그립니다. (x좌표에 100을 더하고 가로 길이와 간격을 두 배 더합니다.)
+
+      // 선택 버튼을 클릭할 때마다 비어있는 첫 번째 사각형에 숫자를 채워 넣습니다.
+      selectButton.addEventListener("click", function () {
+        // 현재 빨간색 눈금이 가리키는 숫자를 구합니다. (위에서 이미 구했습니다.)
+        var number = Math.round(tickAngle / ((2 * Math.PI) / 12)) * 5;
+        number = Math.abs(number);
+        number = (number + 60) % 60;
+
+        // 비어있는 첫 번째 사각형에 숫자를 채워 넣습니다.
+        if (num1 === null) {
+          // 첫 번째 사각형이 비어있다면
+          num1 = number; // 첫 번째 숫자에 number를 저장합니다.
+          ctx.fillStyle = "black"; // 검정색으로 설정합니다.
+          ctx.font = "30px Arial"; // 폰트를 설정합니다.
+          ctx.fillText(num1, rectX + rectW / 2 + 83, rectY + rectH / 2 + 6.5); // 첫 번째 사각형에 숫자를 씁니다.
+        } else if (num2 === null) {
+          // 두 번째 사각형이 비어있다면
+          num2 = number; // 두 번째 숫자에 number를 저장합니다.
+          ctx.fillStyle = "black"; // 검정색으로 설정합니다.
+          ctx.font = "30px Arial"; // 폰트를 설정합니다.
+          ctx.fillText(
+            num2,
+            rectX + rectW / 2 + 165,
+            rectY + (rectH + rectS) + rectH / 2 + 5 - 74
+          ); // 두 번째 사각형에 숫자를 씁니다.
+        } else if (num3 === null) {
+          // 세 번째 사각형이 비어있다면
+          num3 = number; // 세 번째 숫자에 number를 저장합니다.
+          ctx.fillStyle = "black"; // 검정색으로 설정합니다.
+          ctx.font = "30px Arial"; // 폰트를 설정합니다.
+          ctx.fillText(
+            num3,
+            rectX + rectW / 2 - 6 + 250,
+            rectY + (rectH + rectS) * 2 + rectH / 2 + 3 - 150
+          ); // 세 번째 사각형에 숫자를 씁니다.
+        }
+      });
+      // 초기화 버튼을 가져옵니다.
+      var resetButton = document.getElementById("reset-button");
+
+      // 초기화 버튼에 클릭 이벤트 리스너를 추가합니다.
+      resetButton.addEventListener("click", function () {
+        // num1, num2, num3 변수의 값을 null로 바꿉니다.
+        num1 = null;
+        num2 = null;
+        num3 = null;
+
+        // 세 개의 사각형을 다시 흰색으로 채웁니다.
+        ctx.fillStyle = "white"; // 흰색으로 설정합니다.
+        ctx.fillRect(rectX + 100, rectY, rectW, rectH); // 첫 번째 사각형을 그립니다.
+        ctx.fillRect(rectX + rectW + rectS + 100, rectY, rectW, rectH); // 두 번째 사각형을 그립니다.
+        ctx.fillRect(rectX + (rectW + rectS) * 2 + 100, rectY, rectW, rectH); // 세 번째 사각형을 그립니다.
+      });
+
+      // 캔버스에 클릭 이벤트 리스너를 추가합니다.
+      canvas.addEventListener("click", function (event) {
+        // 클릭한 위치의 x좌표와 y좌표를 구합니다.
+        var rect = canvas.getBoundingClientRect(); // 캔버스의 위치와 크기를 구합니다.
+        var x8 = event.clientX - rect.left; // 캔버스 왼쪽 상단을 기준으로 한 x좌표
+        var y8 = event.clientY - rect.top; // 캔버스 왼쪽 상단을 기준으로 한 y좌표
+
+        // 클릭한 위치가 오른쪽 삼각형 영역이면
+        if (
+          x8 >= x7 - t / 2 &&
+          x8 <= x7 + t / 2 &&
+          y8 >= y7 - (t / 2) * Math.sqrt(3) &&
+          y8 <= y7 + (t / 2) * Math.sqrt(3)
+        ) {
+          rotateTick("right"); // 다이얼을 시계 방향으로 회전시킵니다.
+        }
+      });
+
+      // open 버튼을 생성합니다.
+      var openButton = document.createElement("input");
+      openButton.type = "button";
+      openButton.value = "금고를 연다";
+      openButton.style =
+        "z-index:2; position:absolute; top: 500px; left:380px; background-color: yellow; border-color: yellow; font-size: 30px;";
+
+      // open 버튼에 클릭 이벤트 리스너를 추가합니다.
+      openButton.addEventListener("click", function () {
+        // 다른 페이지의 링크로 이동합니다. (여기서는 예시로 https://www.google.com/ 를 사용합니다.)
+        window.open("https://sites.google.com/view/bkesd/31");
+      });
+
+      // 세 개의 숫자가 40, 30, 5 인지 확인하는 함수를 정의합니다.
+      function checkNumbers(a, b, c) {
+        if (num1 === a && num2 === b && num3 === c) {
+          // 세 개의 숫자가 모두 조건에 맞다면
+          // open 버튼을 body 요소에 추가합니다.
+          document.body.appendChild(openButton);
+        } else {
+          // 세 개의 숫자가 조건에 맞지 않다면
+          // open 버튼을 body 요소에서 제거합니다. (있는 경우에만)
+          if (document.body.contains(openButton)) {
+            document.body.removeChild(openButton);
+          }
+        }
+      }
+
+      // 선택 버튼을 클릭할 때마다 checkNumbers 함수를 호출합니다.
+      selectButton.addEventListener("click", function () {
+        checkNumbers(5, 5, 5); // 세 개의 숫자가 조건에 맞는지 확인하는 함수를 호출합니다.
+      });
+
+      // 초기화 버튼을 클릭할 때마다 checkNumbers 함수를 호출합니다.
+      resetButton.addEventListener("click", function () {
+        checkNumbers(5, 5, 5); // 세 개의 숫자가 조건에 맞는지 확인하는 함수를 호출합니다.
+      });
+    </script>
+  </body>
+</html>

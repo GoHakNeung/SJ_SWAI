@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ambient Sound Decibels</title>
+    <style>
+      body {
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #measurement-container {
+        text-align: center;
+      }
+
+      #decibel-value {
+        color: black;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      #graph {
+        width: 800px;
+        height: 400px;
+        margin: 0 auto;
+      }
+    </style>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        // Check if the browser supports the Web Audio API
+        if (!navigator.getUserMedia && !navigator.mediaDevices.getUserMedia) {
+          alert("Sorry, your browser doesn't support the Web Audio API.");
+          return;
+        }
+
+        // Function to calculate decibel value from amplitude
+        function calculateDecibel(value) {
+          return 20 * Math.log10(value);
+        }
+
+        // Function to update the decibel value on the web page
+        function updateDecibelValue(value) {
+          const decibelElement = document.getElementById("decibel-value");
+          decibelElement.textContent = value.toFixed(2) + " dB";
+        }
+
+        // Function to update the graph
+        function updateGraph(time, decibelValue) {
+          const canvas = document.getElementById("graph");
+          const ctx = canvas.getContext("2d");
+          const canvasWidth = canvas.width;
+          const canvasHeight = canvas.height;
+
+          // Calculate x and y coordinates for the graph
+          const x = (time / 100) % canvasWidth;
+          const y =
+            canvasHeight / 2 -
+            decibelValue * (canvasHeight / 100) +
+            Math.sin((time / 1000) * Math.PI * 2) * 50;
+
+          // Clear the canvas
+          ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+          // Draw the graph
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = "black";
+          ctx.fill();
+
+          // Draw x and y axes
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, canvasHeight / 2);
+          ctx.lineTo(canvasWidth, canvasHeight / 2);
+          ctx.moveTo(0, canvasHeight / 2);
+          ctx.lineTo(0, canvasHeight);
+          ctx.stroke();
+
+          // Draw x and y axis labels
+          ctx.font = "12px Arial";
+          ctx.fillStyle = "black";
+          ctx.fillText("Time", canvasWidth - 30, canvasHeight / 2 - 5);
+          ctx.fillText("Decibels", 5, 12);
+        }
+
+        // Variables for measurement
+        let startTime;
+        let measurementInterval;
+        let isMeasurementActive = false;
+
+        // Request access to the user's microphone
+        navigator.getUserMedia =
+          navigator.getUserMedia ||
+          navigator.webkitGetUserMedia ||
+          navigator.mozGetUserMedia ||
+          navigator.msGetUserMedia;
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+
+            // Configure the analyser node
+            analyser.fftSize = 2048;
+
+            // Connect the audio source to the analyser node
+            source.connect(analyser);
+
+            // Create an array to store the frequency data
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            // Function to measure and update the decibel value
+            function measureDecibel() {
+              analyser.getByteFrequencyData(dataArray);
+
+              // Calculate the average amplitude of the frequency data
+              let amplitudeSum = 0;
+              for (let i = 0; i < bufferLength; i++) {
+                amplitudeSum += dataArray[i];
+              }
+              const averageAmplitude = amplitudeSum / bufferLength;
+
+              // Convert the average amplitude to decibels
+              const decibelValue = calculateDecibel(averageAmplitude);
+
+              // Calibrate the decibel value
+              const calibratedValue = decibelValue + 30;
+
+              // Update the decibel value on the web page
+              updateDecibelValue(calibratedValue);
+
+              // Update the graph
+              const currentTime = Date.now() - startTime;
+              updateGraph(currentTime, calibratedValue);
+
+              // Call the function again after the measurement interval
+              if (isMeasurementActive) {
+                setTimeout(measureDecibel, 100);
+              }
+            }
+
+            // Start the measurement when the start button is clicked
+            document
+              .getElementById("start-button")
+              .addEventListener("click", () => {
+                if (!isMeasurementActive) {
+                  startTime = Date.now();
+                  isMeasurementActive = true;
+                  measureDecibel();
+                }
+              });
+
+            // Stop the measurement when the stop button is clicked
+            document
+              .getElementById("stop-button")
+              .addEventListener("click", () => {
+                isMeasurementActive = false;
+              });
+          })
+          .catch((error) => {
+            alert("Error accessing the microphone: " + error);
+          });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Ambient Sound Decibels</h1>
+    <div id="measurement-container">
+      <button id="start-button">Start Measurement</button>
+      <button id="stop-button">Stop Measurement</button>
+      <div id="decibel-value">-</div>
+      <canvas id="graph"></canvas>
+    </div>
+  </body>
+</html>

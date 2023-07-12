@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>학교 교실 자리 바꾸기</title>
+  <style>
+    .classroom {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .seats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* 가로로 배열 */
+      gap: 10px;
+    }
+    .seat {
+      width: 50px;
+      height: 50px;
+      background-color: #eaeaea;
+      border: 1px solid #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .input-container {
+      margin-bottom: 10px;
+    }
+    .button-container {
+      text-align: center;
+    }
+    .student-input {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .student-input label {
+      margin-bottom: 5px;
+    }
+    .student-input textarea {
+      width: 300px;
+      height: 100px;
+    }
+    .student-list {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="input-container">
+    <label for="student-count">학생 수:</label>
+    <input type="number" id="student-count">
+    <button onclick="setClassroomSize()">입력하기</button>
+  </div>
+
+  <div class="input-container student-input">
+    <label for="student-names">학생 이름 입력 (Enter로 구분):</label>
+    <textarea id="student-names" rows="4"></textarea>
+  </div>
+
+  <div class="input-container">
+    <label for="classroom-size">교실 크기 (가로*세로):</label>
+    <input type="text" id="classroom-size">
+    <button onclick="createSeats()">선택하기</button>
+  </div>
+
+  <div class="classroom">
+    <div class="seats" id="seats-container"></div>
+  </div>
+
+  <div class="student-list">
+    <h3>학생 목록:</h3>
+    <ul id="student-list"></ul>
+  </div>
+
+  <script>
+    var classroomSize = [];
+    var fixedSeats = {};
+
+    function setClassroomSize() {
+      var studentCount = parseInt(document.getElementById("student-count").value);
+      classroomSize = [Math.ceil(Math.sqrt(studentCount)), Math.ceil(Math.sqrt(studentCount))];
+      var classroomSizeInput = document.getElementById("classroom-size");
+      classroomSizeInput.value = `${classroomSize[0]}*${classroomSize[1]}`; // 학생 수에 따라 교실 크기 결정
+    }
+
+    function createSeats() {
+      var classroomSizeInput = document.getElementById("classroom-size").value.split("*");
+      classroomSize = [parseInt(classroomSizeInput[0]), parseInt(classroomSizeInput[1])];
+
+      var rows = classroomSize[1];
+      var columns = classroomSize[0];
+
+      var seatsContainer = document.getElementById("seats-container");
+      seatsContainer.innerHTML = "";
+
+      seatsContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(50px, 1fr))`; // 가로로 배열하는 속성 설정
+
+      for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < columns; j++) {
+          var seat = document.createElement("div");
+          seat.classList.add("seat");
+          seat.setAttribute("id", `${i + 1}-${j + 1}`);
+          seat.innerText = `${i + 1}-${j + 1}`;
+          seatsContainer.appendChild(seat);
+        }
+      }
+    }
+
+    function processStudentNames() {
+      var studentNamesInput = document.getElementById("student-names");
+      var studentNames = studentNamesInput.value.split("\n");
+
+      var studentList = document.getElementById("student-list");
+      // studentList.innerHTML = ""; // 학생 목록 초기화
+
+      for (var i = 0; i < studentNames.length; i++) {
+        var studentName = studentNames[i].trim();
+
+        if (studentName !== "") {
+          var listItem = document.createElement("li");
+          listItem.innerText = studentName;
+          studentList.appendChild(listItem);
+        }
+      }
+
+      // studentNamesInput.value = ""; // 입력 칸 비우기
+    }
+
+    function fixStudentSeat() {
+      var studentNameInput = document.getElementById("fixed-student-name");
+      var studentSeatInput = document.getElementById("fixed-student-seat");
+
+      var studentName = studentNameInput.value.trim();
+      var studentSeat = studentSeatInput.value.trim();
+
+      if (studentName !== "" && studentSeat !== "") {
+        fixedSeats[studentSeat] = studentName;
+        var seat = document.getElementById(studentSeat);
+        seat.innerText = studentName;
+      }
+
+      studentNameInput.value = "";
+      studentSeatInput.value = "";
+    }
+
+    var studentNamesInput = document.getElementById("student-names");
+    studentNamesInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        processStudentNames();
+        event.preventDefault(); // Enter 키 기본 동작 제거 (줄 바꿈 방지)
+        studentNamesInput.value = ""; // 입력 칸 비우기
+      }
+    });
+  </script>
+</body>
+</html>

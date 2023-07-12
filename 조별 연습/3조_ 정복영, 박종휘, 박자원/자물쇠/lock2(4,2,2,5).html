@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CSS 도형 예제</title>
+    <style>
+      body {
+        margin: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .triangle {
+        width: 0;
+        height: 0;
+        border-left: 50px solid transparent;
+        border-right: 50px solid transparent;
+        border-bottom: 50px solid gold;
+      }
+      .square {
+        width: 100px;
+        height: 100px;
+        background-color: white;
+        border: 5px solid gold;
+        border-radius: 10px;
+        text-align: center;
+        line-height: 100px;
+        font-size: 30px;
+      }
+      .reverse-triangle {
+        width: 0;
+        height: 0;
+        border-left: 50px solid transparent;
+        border-right: 50px solid transparent;
+        border-top: 50px solid gold;
+      }
+      .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+      .triangle,
+      .square,
+      .reverse-triangle {
+        margin: 10px;
+      }
+      .set {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #check-button {
+        width: 200px;
+        height: 50px;
+        font-size: 20px;
+        background-color: white;
+        border: 5px solid gold;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="set">
+        <div class="triangle"></div>
+        <div class="square"></div>
+        <div class="reverse-triangle"></div>
+      </div>
+      <div class="set">
+        <div class="triangle"></div>
+        <div class="square"></div>
+        <div class="reverse-triangle"></div>
+      </div>
+      <div class="set">
+        <div class="triangle"></div>
+        <div class="square"></div>
+        <div class="reverse-triangle"></div>
+      </div>
+      <div class="set">
+        <div class="triangle"></div>
+        <div class="square"></div>
+        <div class="reverse-triangle"></div>
+      </div>
+    </div>
+    <!-- 정답 확인 버튼 -->
+    <button id="check-button" disabled>정답 확인</button>
+    <script>
+      const squares = document.querySelectorAll(".square");
+      let numbers = [0, 0, 0, 0];
+      function showNumber(index) {
+        squares[index].textContent = numbers[index];
+      }
+      for (let i = 0; i < squares.length; i++) {
+        showNumber(i);
+      }
+      const triangles = document.querySelectorAll(".triangle");
+      const reverseTriangles = document.querySelectorAll(".reverse-triangle");
+      function increaseNumber(event) {
+        let index = Array.from(triangles).indexOf(event.target);
+        numbers[index] = (numbers[index] + 1) % 10;
+        showNumber(index);
+        checkNumbers();
+      }
+      function decreaseNumber(event) {
+        let index = Array.from(reverseTriangles).indexOf(event.target);
+        numbers[index] = (numbers[index] - 1 + 10) % 10;
+        showNumber(index);
+        checkNumbers();
+      }
+      for (let triangle of triangles) {
+        triangle.addEventListener("click", increaseNumber);
+      }
+      for (let reverseTriangle of reverseTriangles) {
+        reverseTriangle.addEventListener("click", decreaseNumber);
+      }
+      const checkButton = document.getElementById("check-button");
+      function goToNaver() {
+        // window.location.href 대신에 window.open 사용
+        window.open("https://sites.google.com/view/bkesd/29-5");
+      }
+      checkButton.addEventListener("click", goToNaver);
+      // 숫자 배열이 [1, 2, 3, 4]와 같은지 확인하는 함수
+      function checkNumbers() {
+        // isCorrect 변수를 false로 초기화
+        let isCorrect = false;
+
+        // numbers 배열의 각 원소가 원하는 값과 일치하는지 확인하는 if문
+        if (numbers[0] === 4) {
+          if (numbers[1] === 2) {
+            if (numbers[2] === 2) {
+              if (numbers[3] === 5) {
+                // 모두 일치하면 isCorrect를 true로 설정
+                isCorrect = true;
+              }
+            }
+          }
+        }
+
+        // 버튼의 disabled 속성을 isCorrect 값의 반대로 설정
+        checkButton.disabled = !isCorrect;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>자리바꾸기</title>
+    <style>
+      body {
+        background-color: #83c5d8; /* 기본 테마 배경색 */
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        color: #fff; /* 흰색 */
+        text-align: center;
+        padding: 20px;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-gap: 10px;
+        justify-items: center;
+        align-items: center;
+        margin: 10px;
+      }
+
+      .div-item {
+        background-color: #fff; /* 기본 테마 div 배경색 */
+        border: 1px solid #83c5d8; /* 기본 테마 div 테두리 색상 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+      }
+
+      .selected {
+        border-color: #ff9f1c; /* 선택된 div 테두리 색상 */
+        box-shadow: 0px 2px 6px rgba(255, 159, 28, 0.4); /* 선택된 div 그림자 효과 */
+      }
+
+      .summer-theme {
+        background-color: #83c5d8; /* 여름 테마 배경색 */
+        border-color: #fff; /* 여름 테마 div 테두리 색상 */
+      }
+
+      .summer-theme .selected {
+        border-color: #ff9f1c; /* 여름 테마 선택된 div 테두리 색상 */
+      }
+
+      .button-container {
+        text-align: center;
+        margin: 10px;
+      }
+
+      button {
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>이번 달 내 자리는 어디?</h1>
+    <div class="grid-container">
+      <div class="div-item">1</div>
+      <div class="div-item">2</div>
+      <div class="div-item">3</div>
+      <div class="div-item">4</div>
+      <div class="div-item">5</div>
+      <div class="div-item">6</div>
+      <div class="div-item">7</div>
+      <div class="div-item">8</div>
+      <div class="div-item">9</div>
+      <div class="div-item">10</div>
+      <div class="div-item">11</div>
+      <div class="div-item">12</div>
+      <div class="div-item">13</div>
+      <div class="div-item">14</div>
+      <div class="div-item">15</div>
+      <div class="div-item">16</div>
+      <div class="div-item">17</div>
+      <div class="div-item">18</div>
+    </div>
+    <div class="button-container">
+      <button type="button" onclick="shuffleNumbers()">자리발표</button>
+    </div>
+
+    <script>
+      const divs = document.querySelectorAll(".div-item");
+      let numbers = Array.from(divs).map((div) => div.innerText);
+      let selectedDivs = new Set();
+
+      function shuffleNumbers() {
+        const availableNumbers = numbers.filter(
+          (number) => !selectedDivs.has(number)
+        );
+        const shuffledNumbers = shuffleArray(availableNumbers);
+        let index = 0;
+
+        divs.forEach((div) => {
+          if (!selectedDivs.has(div.innerText)) {
+            div.innerText = shuffledNumbers[index];
+            index++;
+          }
+        });
+      }
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      function toggleTheme() {
+        const body = document.querySelector("body");
+        body.classList.toggle("summer-theme");
+      }
+
+      divs.forEach((div) => {
+        div.addEventListener("click", () => {
+          div.classList.toggle("selected");
+          if (div.classList.contains("selected")) {
+            selectedDivs.add(div.innerText);
+          } else {
+            selectedDivs.delete(div.innerText);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

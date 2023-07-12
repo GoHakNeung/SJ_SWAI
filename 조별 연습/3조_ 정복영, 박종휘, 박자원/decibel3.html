@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>입력 소리 그래프</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>입력 소리 그래프</h1>
+    <canvas id="graphCanvas" width="800" height="400"></canvas>
+    <div id="averageDecibel">평균 데시벨:</div>
+
+    <script>
+      // 마이크 액세스 권한 요청
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(function (stream) {
+          // 오디오 소스 생성
+          var audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+          var audioSource = audioContext.createMediaStreamSource(stream);
+
+          // 분석기 생성
+          var analyser = audioContext.createAnalyser();
+          audioSource.connect(analyser);
+
+          // 분석기 설정
+          analyser.fftSize = 2048; // FFT 크기
+          var bufferLength = analyser.fftSize;
+          var dataArray = new Uint8Array(bufferLength);
+
+          // 캔버스 요소 및 컨텍스트 가져오기
+          var graphCanvas = document.getElementById("graphCanvas");
+          var ctx = graphCanvas.getContext("2d");
+
+          // 그래프 데이터 기록 배열 초기화
+          var graphData = [];
+          var averageDecibel = 0;
+          var averageDecibelHistory = [];
+
+          // 그래프 그리기
+          function drawGraph() {
+            requestAnimationFrame(drawGraph);
+
+            analyser.getByteTimeDomainData(dataArray);
+
+            // 평균 데시벨 계산
+            var totalDecibel = 0;
+            for (var i = 0; i < bufferLength; i++) {
+              totalDecibel += Math.abs(dataArray[i] - 128);
+            }
+            averageDecibel = totalDecibel / bufferLength;
+
+            // 캔버스 지우기
+            ctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+
+            // 그래프 데이터 업데이트
+            graphData.push(averageDecibel);
+            if (graphData.length > graphCanvas.width) {
+              graphData.shift();
+            }
+
+            // 그래프 그리기
+            var xScale = graphCanvas.width / graphData.length;
+
+            // y축 스케일 조정
+            var maxDecibel = Math.max(...graphData);
+            var yScale = graphCanvas.height / (2 * maxDecibel);
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(0, graphCanvas.height / 2 - graphData[0] * yScale);
+            for (var i = 1; i < graphData.length; i++) {
+              ctx.lineTo(
+                i * xScale,
+                graphCanvas.height / 2 - graphData[i] * yScale
+              );
+            }
+            ctx.stroke();
+
+            // x축 레이블 그리기
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.fillText(
+              "시간 (초)",
+              graphCanvas.width / 2,
+              graphCanvas.height - 10
+            );
+
+            // y축 레이블 그리기
+            ctx.save();
+            ctx.translate(10, graphCanvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = "center";
+            ctx.fillText("평균 데시벨", 0, 0);
+            ctx.restore();
+
+            // 평균 데시벨 표시하기
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "left";
+            ctx.fillText(
+              "평균 데시벨: " + averageDecibel.toFixed(2),
+              10,
+              graphCanvas.height - 10
+            );
+
+            // 최근 1분간의 최대 데시벨 평균 계산
+            averageDecibelHistory.push(averageDecibel);
+            var currentTime = new Date().getTime();
+            var startTime = currentTime - 60 * 1000; // 1분 전의 시간
+            var filteredHistory = averageDecibelHistory.filter(function (
+              value
+            ) {
+              return value !== undefined;
+            });
+            var recentAverageDecibel =
+              filteredHistory.reduce(function (sum, value) {
+                return sum + value;
+              }, 0) / filteredHistory.length;
+
+            // 최근 1분간의 최대 데시벨 평균 표시하기
+            var averageDecibelDiv = document.getElementById("averageDecibel");
+            averageDecibelDiv.innerText =
+              "최근 1분간의 최대 데시벨 평균: " +
+              recentAverageDecibel.toFixed(2);
+
+            // 데시벨 기준 초과 시 알림 창 표시
+            if (averageDecibel > 10) {
+              alert("조용히 해주세요.");
+            }
+          }
+
+          // 그래프 그리기 시작
+          drawGraph();
+        })
+        .catch(function (err) {
+          console.error(err);
+        });
+    </script>
+  </body>
+</html>
