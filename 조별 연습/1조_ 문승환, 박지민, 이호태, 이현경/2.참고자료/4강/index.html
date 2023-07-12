@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='js/clock.js'></script>
+    <title>Document</title>
+    <style>
+        .clockBox {
+            width: fit-content;
+            height: fit-content;
+            border: 1px solid black;
+            background-image: url("clock.svg");
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            /* Added position relative */
+        }
+    </style>
+</head>
+</head>
+
+<body>
+
+    <div id="clockContainer"></div>
+    <input type="range" id="sliderHour"  min=0 max=12 onchange="clock.setHour(value);"/>
+    <input type="range" id="sliderMinute" min=0 max=59 onchange="clock.setMinute(value);" />
+    <input type="range" id="sliderSecond" min=0 max=59 onchange="clock.setSecond(value);"/>
+    <script>
+        // Usage example:
+        const obj = document.getElementById("clockContainer");
+        const clock = new Clock(700, 700);
+        clock.render();
+
+        // Set the hour, minute, and second values
+        
+        clock.setHour(12);
+        clock.setMinute(30);
+        clock.setSecond(45);
+        clock.run(1);
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='js/clock.js'></script>
+    <style>
+     .clockBox {
+        background-image: url("clock.svg") no-repeat center center;
+     }
+    </style>
+</head>
+<body>
+    <div id="clockContainer"></div>
+    <script>
+        const obj = document.getElementById("clockContainer");
+        const clock = new Clock(700, 700);
+        clock.render();
+
+        clock.setHour(12);
+        clock.setMinute(30);
+        clock.setSeconds(45);
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .clockBox {
+        border: 1px solid black;
+        background-image: url("clock.svg");
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative; /* Added position relative */
+      }
+
+      .hand {
+        position: absolute;
+        background-color: black;
+      }
+
+      .hour-hand {
+        width: 10px;
+        height: 200px;
+        transform-origin: 50% 90%;
+        position: absolute; /* Added position absolute */
+        top: 50%; /* Adjust top and left values as needed */
+        left: 50%;
+        z-index: 1; /* Ensure the line is on top */
+      }
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="makeClock(600,600,9,30)">버튼 클릭</button>
+    <script>
+      function makeClock(width, height, hour, minute) {
+        var clockBox = document.createElement("div");
+        clockBox.id = "clock";
+        clockBox.classList.add("clockBox");
+        clockBox.setAttribute("style", `width:${width}px;height:${height}px`);
+
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        svg.setAttribute("width", "100%");
+        svg.setAttribute("height", "100%");
+
+        // create a 시각, 분, 초
+        var scaleRate = width / 387;
+
+        var minuteHand = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "polygon"
+        );
+        minuteHand.setAttribute("class", "minuteHand");
+        minuteHand.setAttribute("fill", "#0000ff");
+        minuteHand.setAttribute(
+          "points",
+          "196.2,193 190.2,193 190.2,55.2 193.2,50.2 196.2,55.2"
+        );
+        minuteHand.setAttribute("transform", `scale(${scaleRate})`);
+
+        svg.appendChild(minuteHand);
+
+        // Create a polygon for hour hand
+        var hourHand = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "polygon"
+        );
+        hourHand.setAttribute("class", "hourHand");
+        hourHand.setAttribute("stroke", "url(#hourBorder)");
+        hourHand.setAttribute("fill", "#66767");
+        hourHand.setAttribute(
+          "points",
+          "198.5,193 188,193 188,104.5 193.2,99.4 198.5,104.5"
+        );
+        svg.appendChild(hourHand);
+
+        
+
+        
+
+        // Rotate the hour and minute hands
+        var hourHandRotation = 30 * hour + (minute / 60) * 30;
+        var minuteHandRotation = 6 * minute;
+
+        hourHand.setAttribute(
+          "transform",
+          `rotate(${hourHandRotation} ${193 * scaleRate} ${
+            193 * scaleRate
+          }) scale(${scaleRate})`
+        );
+        minuteHand.setAttribute(
+          "transform",
+          `rotate(${minuteHandRotation} ${193 * scaleRate} ${
+            193 * scaleRate
+          }) scale(${scaleRate})`
+        );
+      
+
+      
+     
+        var centerOutlinePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        centerOutlinePath.setAttribute("fill", "#999999");
+        centerOutlinePath.setAttribute("d", "M203.9,191.3c1.2,7.5-5.1,13.8-12.6,12.6c-4.5-0.7-8.2-4.4-8.9-8.9c-1.2-7.5,5.1-13.8,12.6-12.6 C199.6,183.1,203.2,186.8,203.9,191.3z");
+        centerOutlinePath.setAttribute("transform", `scale(${scaleRate})`);
+      
+        svg.appendChild(centerOutlinePath);
+
+        var centerFilledCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        centerFilledCircle.setAttribute("class", "centerFilled");
+        centerFilledCircle.setAttribute("fill", "#999999");
+        centerFilledCircle.setAttribute("stroke", "#FFFFFF");
+        centerFilledCircle.setAttribute("stroke-width", "3.5496");
+        centerFilledCircle.setAttribute("stroke-miterlimit", "10");
+        centerFilledCircle.setAttribute("cx", "193.2");
+        centerFilledCircle.setAttribute("cy", "193.1");
+        centerFilledCircle.setAttribute("r", "7.9");
+        centerFilledCircle.setAttribute("transform", `scale(${scaleRate})`);
+        svg.appendChild(centerFilledCircle);
+
+        clockBox.appendChild(svg);
+
+        document.body.appendChild(clockBox);}
+      makeClock(500, 500, 7, 12);
+    </script>
+  </body>
+</html>
