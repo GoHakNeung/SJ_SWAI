@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>곱셈 맞추기</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background-color: #f2f2f2;
+      }
+
+      .layout {
+        width: 600px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .layout1 {
+        text-align: center;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .layout2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .layout3 {
+        text-align: center;
+        margin-bottom: 0;
+      }
+
+      h1 {
+        margin-top: 0;
+      }
+
+      #timer,
+      #score,
+      #totalProblem {
+        margin-bottom: 10px;
+      }
+
+      #canvas {
+        width: 500px;
+        height: 400px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+      }
+
+      #answer {
+        width: 100%;
+        height: 40px;
+        margin-bottom: 10px;
+        padding: 5px;
+        font-size: 18px;
+      }
+
+      #clearInputBtn {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+      }
+      #clearBtn {
+        width: 50%;
+        height: 40px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      #problem {
+        height: 50px;
+        font-size: xx-large;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="layout layout1">
+        <h1>곱셈 맞추기</h1>
+        <div class="row">
+          <div class="col">
+            <div id="timer" class="mb-2">걸린 시간: 0s</div>
+          </div>
+          <div class="col">
+            <div id="score" class="mb-2">정답: 0/10</div>
+          </div>
+          <div class="col">
+            <div id="totalProblem" class="mb-2">총 문제 수: 0</div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center mb-3">
+        <div id="problem" class="fs-1"></div>
+      </div>
+      <div class="layout layout2">
+        <canvas id="canvas"></canvas>
+        <button id="clearBtn" class="btn btn-danger">지우기</button>
+      </div>
+      <div class="layout layout3">
+        <input
+          type="text"
+          id="answer"
+          placeholder="정답은?"
+          class="form-control mb-2"
+        />
+        <div class="btn-group" role="group" aria-label="Numbers">
+          <button class="number_btn btn btn-secondary">0</button>
+          <button class="number_btn btn btn-secondary">1</button>
+          <button class="number_btn btn btn-secondary">2</button>
+          <button class="number_btn btn btn-secondary">3</button>
+          <button class="number_btn btn btn-secondary">4</button>
+          <button class="number_btn btn btn-secondary">5</button>
+          <button class="number_btn btn btn-secondary">6</button>
+          <button class="number_btn btn btn-secondary">7</button>
+          <button class="number_btn btn btn-secondary">8</button>
+          <button class="number_btn btn btn-secondary">9</button>
+          <button id="clearInputBtn" class="btn btn-danger">&#9003;</button>
+        </div>
+      </div>
+      <div class="layout layout3">
+        <button id="startBtn" class="btn btn-primary">문제 시작</button>
+        <button id="checkBtn" class="btn btn-success">정답 확인</button>
+      </div>
+    </div>
+    <script>
+      var canvas = document.getElementById("canvas");
+      var context = canvas.getContext("2d");
+      var painting = false;
+
+      canvas.addEventListener("mousedown", startPainting);
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseup", stopPainting);
+      canvas.addEventListener("mouseleave", stopPainting);
+
+      function startPainting(event) {
+        painting = true;
+        draw(event);
+      }
+
+      function draw(event) {
+        if (!painting) return;
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        var x = (event.clientX - rect.left) * scaleX;
+        var y = (event.clientY - rect.top) * scaleY;
+        context.lineWidth = 3;
+        context.lineCap = "round";
+        context.strokeStyle = "#000";
+        context.lineTo(x, y);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(x, y);
+      }
+
+      function stopPainting() {
+        painting = false;
+        context.beginPath();
+      }
+
+      var clearInputBtn = document.getElementById("clearInputBtn");
+      clearInputBtn.addEventListener("click", clearInput);
+
+      function clearInput() {
+        var answerInput = document.getElementById("answer");
+        var currentValue = answerInput.value;
+        var newValue = currentValue.slice(0, -1); // 마지막 문자 제거
+        answerInput.value = newValue;
+      }
+
+      var timerElement = document.getElementById("timer");
+      var scoreElement = document.getElementById("score");
+      var totalProblemElement = document.getElementById("totalProblem");
+      var problemElement = document.getElementById("problem");
+      var answerInput = document.getElementById("answer");
+
+      var timerInterval;
+      var startTime;
+      var score = 0;
+      var totalProblems = 0;
+      var currentProblem;
+      var answer;
+      var gameData = [];
+
+      function startGame() {
+        clearCanvas();
+        resetTimer();
+        score = 0;
+        totalProblems = 0;
+        scoreElement.textContent = "정답: 0/10";
+        totalProblemElement.textContent = "총 문제 수: 0";
+        generateProblem();
+        answerInput.value = "";
+        answerInput.disabled = false;
+        answerInput.focus();
+        document.getElementById("startBtn").disabled = true;
+        document.getElementById("checkBtn").disabled = false;
+      }
+
+      function generateProblem() {
+        var num1 = Math.floor(Math.random() * 900) + 100;
+        var num2 = Math.floor(Math.random() * 90) + 10;
+        currentProblem = num1 + " × " + num2;
+        answer = num1 * num2;
+        problemElement.textContent = currentProblem;
+      }
+
+      function checkAnswer() {
+        var userAnswer = parseInt(answerInput.value);
+        if (!isNaN(userAnswer)) {
+          totalProblems++;
+          totalProblemElement.textContent = "총 문제 수: " + totalProblems;
+          if (userAnswer === answer) {
+            score++;
+            scoreElement.textContent = "정답: " + score + "/10";
+          }
+          answerInput.value = "";
+          generateProblem();
+          answerInput.focus();
+          if (totalProblems === 10) {
+            endGame();
+          }
+        }
+      }
+
+      function endGame() {
+        clearInterval(timerInterval);
+        answerInput.disabled = true;
+        document.getElementById("startBtn").disabled = false;
+        document.getElementById("checkBtn").disabled = true;
+        var gameResult = {
+          score: score,
+          time: (new Date().getTime() - startTime) / 1000,
+        };
+        gameData.push(gameResult); // Store game data
+        localStorage.setItem("gameData", JSON.stringify(gameData));
+        alert(
+          "게임 종료!\n걸린 시간: " +
+            gameResult.time +
+            "초\n정답 개수: " +
+            gameResult.score +
+            "/10"
+        );
+      }
+
+      function addNumber(event) {
+        answerInput.value += event.target.textContent;
+      }
+
+      var clearBtn = document.getElementById("clearBtn");
+      clearBtn.addEventListener("click", clearCanvas);
+
+      function clearCanvas() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        startTime = new Date().getTime();
+        timerInterval = setInterval(updateTimer, 100);
+      }
+
+      function updateTimer() {
+        var currentTime = new Date().getTime();
+        var elapsedTime = (currentTime - startTime) / 1000;
+        timerElement.textContent = "걸린 시간: " + elapsedTime.toFixed(1) + "s";
+      }
+
+      // Load game data from local storage if exists
+      if (localStorage.getItem("gameData")) {
+        gameData = JSON.parse(localStorage.getItem("gameData"));
+      }
+
+      // 문제 시작 버튼 클릭 시 동작
+      document.getElementById("startBtn").addEventListener("click", startGame);
+
+      // 정답 확인 버튼 클릭 시 동작
+      document
+        .getElementById("checkBtn")
+        .addEventListener("click", checkAnswer);
+
+      // 숫자 버튼 클릭 시 동작
+      var numberButtons = document.getElementsByClassName("number_btn");
+      for (var i = 0; i < numberButtons.length; i++) {
+        numberButtons[i].addEventListener("click", addNumber);
+      }
+    </script>
+  </body>
+</html>
