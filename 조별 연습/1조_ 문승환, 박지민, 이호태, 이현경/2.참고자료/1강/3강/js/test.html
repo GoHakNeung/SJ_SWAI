@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    
+    <script>
+        class Popup {
+            constructor() {
+                this.container = document.createElement('div');
+                this.divHeader = document.createElement('div');
+                this.divMain = document.createElement('div');
+                this.divBottom = document.createElement('div');
+                this.btn = document.createElement("button");
+                this.container.id = 'pop_container';
+                this.divHeader.id = 'pop_header';
+                this.divMain.id = 'pop_main';
+                this.divBottom.id = 'pop_bottom';
+                this.container.appendChild(this.divHeader);
+                this.container.appendChild(this.divMain);
+                this.container.appendChild(this.divBottom);
+                this.divBottom.appendChild(this.btn); 
+            }
+
+            makePopup = (title, text, btnTitle, callback=()=>{}) => {
+                this.title = title;
+                this.text = text;
+                this.btnTitle = btnTitle;
+                this.callback = callback;
+
+                this.divHeader.innerText = this.title;
+                this.divMain.innerHTML = this.text;
+                this.btn.textContent = this.btnTitle;
+
+                this.btn.addEventListener("click", () => {
+                    document.body.removeChild(this.container);
+
+                    this.callback();
+                });
+
+                document.body.appendChild(this.container);
+            }
+
+            removePopup = () => {
+                document.body.removeChild(this.container);
+            }
+        }
+
+        let start = ()=>{
+            alert('hi')
+        }
+
+        let popup1 = new Popup();
+        popup1.makePopup('문제번호 1-1번', `시작하시겠습니까?`, '시작하기', start);
+    </script>
+</body>
+</html>

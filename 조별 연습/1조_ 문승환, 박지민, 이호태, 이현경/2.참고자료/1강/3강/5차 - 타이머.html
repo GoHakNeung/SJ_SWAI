@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>술술수학 연습</title>
+    <link rel="stylesheet" type="text/css" href="css/main1.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <script src="js/class1.js"></script>
+    <style>
+        body {
+            position: relative;
+        }
+
+        .메인 {
+            display: block;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .메인1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 19vh;
+        }
+
+        .dot {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            margin: 18px;
+            font-size: 50px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="전체">
+
+
+
+        <div class="상단">
+            <h1 class="타이틀1"> 다음의 개수를 세어 봅시다.</h1>
+            <div class="점수판">
+                <div id="lap">시간:0</div>
+                <div id="correct">정답:0</div>
+                <div id="question">문제:0</div>
+            </div>
+
+        </div>
+
+
+
+        <div class="메인">
+            <div class="메인1">
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+            </div>
+            <div class="메인1">
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+            </div>
+        </div>
+
+
+
+        <div class="하단">
+
+        </div>
+
+    </div>
+
+
+    <script>
+        let 랜덤 = 0;
+        let 시간 = 0
+        let 정답 = 0
+        let 문제 = 0
+        let 하단 = document.querySelector('.하단');
+        let 시간상자 = document.querySelector('#lap');
+        let 정답상자 = document.querySelector('#correct');
+        let 문제상자 = document.querySelector('#question');
+        하단.innerHTML = 버튼만들기();
+        let timer
+        let 상자 = document.getElementsByClassName('dot');
+        let 출제수 = 10;
+
+        function 문제만들기() {
+            랜덤 = 랜덤수(1, 10);
+
+            for (var i = 0; i < 랜덤; i++) {
+                상자[i].innerHTML = "<img src='images/선인장.jpg' width=80%; height=80%>";
+            }
+        }
+
+        function 문제지우기() {
+            for (var i = 0; i < 10; i++) {
+                상자[i].innerHTML = "";
+            }
+
+        }
+
+        function on(n) {  // 정답처리 
+
+            if (n == 랜덤) {
+                문제++;
+                정답++;
+                sounds(1);
+                update();
+                문제지우기();
+                문제만들기();
+
+            }
+            else if (n != 랜덤) {
+                문제++;
+                sounds(2);
+                update();
+            }
+
+            if (문제 >= 출제수) {
+                결과발표();
+
+                return
+            }
+        }
+
+        function update() {
+            정답상자.innerText = `정답: ${정답}`;
+            문제상자.innerText = `문제: ${문제}`;
+
+        }
+
+        function 타이머(n) {
+            if (n == 1) {
+                timer = setInterval(function () {
+                    시간++
+                    시간상자.innerText = `시간: ${시간}`;
+                }, 1000)
+            }
+
+            else if (n == 2) {
+                clearInterval(timer);
+
+            }
+            else if (n == 3) {
+                시간 = 0;
+                시간상자.innerText = `시간: ${시간}`;
+            }
+        }
+
+        function 시작하기() {
+
+            시간 = 0
+            정답 = 0
+            문제 = 0
+            시간상자.innerText = `시간: ${시간}`;
+            정답상자.innerText = `정답: ${정답}`;
+            문제상자.innerText = `문제: ${문제}`;
+            문제만들기();
+            타이머(3)
+            타이머(1);
+        }
+
+        function 결과발표() {
+            타이머(2);
+            팝업창만들기('1-1문제 결과',
+                `당신의 점수는 ${정답}이고 총 ${시간}초가 걸렸습니다`,
+                '다시하기', 시작하기)
+            결과전송();
+        }
+
+        function 결과전송() {
+            if (시간 < 30 && 정답 > (출제수 / 2)) {
+                let user = { courseName: '11', teacher: 202, classNum: 17, score: 정답, lapTime: 시간, dTime: '' }
+                console.log(user);
+            }
+            else { console.log('점수가 낮던지, 시간이 너무 오래걸리던지') }
+        }
+
+
+        
+        window.onload = function () {
+
+            팝업창만들기('1-1문제', '문제를 잘 풀어요', '시작하기', 시작하기)
+
+        }
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

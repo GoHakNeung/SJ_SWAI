@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>술술수학 연습</title>
+    <link rel="stylesheet" type="text/css" href="css/main1.css">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <script src="js/class1.js"></script>
+    <style>
+        body {
+            position: relative;
+        }
+
+        .메인 {
+            display: block;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .메인1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 19vh;
+        }
+
+        .dot {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            margin: 18px;
+            font-size: 50px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="전체">
+        <div class="상단">
+            <h1 class="타이틀1"> 다음의 개수를 세어 봅시다.</h1>
+            <div class="점수판">
+                <div id="lap">시간:0</div>
+                <div id="correct">정답:0</div>
+                <div id="question">문제:0</div>
+            </div>
+            <button onclick="문제지우기()">문제지우기</button>
+            <button onclick="타이머(1)">타이머시작</button>
+            <button onclick="타이머(2)">타이머멈춤</button>
+            <button onclick="타이머(3)">타이머리셋</button>
+        </div>
+        <div class="메인">
+
+            <div class="메인1">
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+            </div>
+            <div class="메인1">
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+                <span class='dot'></span>
+            </div>
+        </div>
+
+        <div class="하단">
+            <script>document.write(버튼만들기());</script>
+
+        </div>
+    </div>
+
+    <script>
+       
+       
+       
+        let 랜덤 ;
+        let 시간=0;
+        let 정답=0;
+        let 문제=0;
+        let 시간상자 = document.getElementById('lap');
+        let 정답상자 = document.getElementById('correct');
+        let 문제상자 = document.getElementById('question');
+        
+        let 상자 = document.getElementsByClassName('dot');
+        let timer
+        let 출제수=3;
+       
+       
+      
+        function 문제만들기() {
+            랜덤= 랜덤수(1, 10);
+            for (let i = 0; i <랜덤; i++) {
+                상자[i].innerHTML = "<img src='images/선인장.jpg' width=80% height=80%>";
+            }
+        }
+
+    function 문제지우기(){
+        for (let i = 0; i <랜덤; i++) {
+                상자[i].innerHTML = "";
+            }
+
+    }
+   
+    function on(n){
+        if(n==랜덤){
+            sounds(1);
+            문제지우기();
+            문제만들기();
+            정답++;
+            문제++;
+            정답상자.innerHTML = "정답:"+정답;
+            문제상자.innerHTML = "문제:"+문제;
+            if(출제수==문제){
+                팝업창만들기('1-1문제 결과',
+                `당신의 점수는 ${정답}이고 총 ${시간}초가 걸렸습니다`,
+                '다시하기', 시작하기)
+            }
+
+        }
+        else {
+            sounds(2)
+            문제++;
+            문제상자.innerHTML = "문제:"+문제;
+            if(출제수==문제){
+                팝업창만들기('1-1문제 결과',
+                `당신의 점수는 ${정답}이고 총 ${시간}초가 걸렸습니다`,
+                '다시하기', 시작하기)
+            }
+        }
+    }
+
+    function 타이머(n){
+        if(n==1){ //타이머 스타트
+         timer= setInterval(function(){
+            시간++;
+            시간상자.innerHTML = "시간:"+시간;
+        },1000)
+        }
+
+        else if(n==2){
+           clearInterval(timer);
+        }
+        else if(n==3){
+            시간=0;
+            시간상자.innerHTML = "시간:"+시간;
+
+        }
+    }
+    
+    
+    팝업창만들기('1-1문제', '문제를 잘 풀어요', '시작하기', 시작하기)
+
+    function 시작하기(){
+        문제만들기();
+    }
+    
+           
+    </script>
+
+</body>
+
+</html>

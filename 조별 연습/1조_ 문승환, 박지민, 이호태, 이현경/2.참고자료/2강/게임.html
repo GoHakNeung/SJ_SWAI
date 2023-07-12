@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Move the Box</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.0/processing.min.js"></script>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var sketch = function(processing) {
+            var width = 500;
+            var height = 500;
+            var x = 50;
+            var y = 50;
+            var width_box = 40;
+            var height_box = 60;
+            var vel = 5;
+            
+            processing.setup = function() {
+                processing.size(width, height);
+                processing.background(255, 255, 255);
+            };
+
+            processing.draw = function() {
+                processing.background(255, 255, 255);
+                processing.rect(x, y, width_box, height_box);
+            };
+
+            processing.keyPressed = function() {
+                if (processing.keyCode == processing.LEFT) {
+                    x -= vel;
+                }
+                else if (processing.keyCode == processing.UP) {
+                    y -= vel;
+                }
+                else if (processing.keyCode == processing.RIGHT) {
+                    x += vel;
+                }
+                else if (processing.keyCode == processing.DOWN) {
+                    y += vel;
+                }
+            };
+
+        };
+
+
+        // Initialize the canvas and append it to the DOM before invoking Processing
+        canvas.width = 500;
+        canvas.height = 500;
+        document.body.appendChild(canvas);
+
+        var p = new Processing(canvas, sketch);
+    </script>
+</body>
+</html>

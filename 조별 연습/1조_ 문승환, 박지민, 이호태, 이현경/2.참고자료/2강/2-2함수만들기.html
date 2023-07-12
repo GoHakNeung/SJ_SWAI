@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    :root {
+        --color1: #FF4136;
+        --color2: #2ECC40;
+        --color3: #0074D9;
+        --color4: #FF851B;
+        --color5: #7FDBFF;
+        --color6: #B10DC9;
+        --color7: #39CCCC;
+        --color8: #F012BE;
+        --color9: #3D9970;
+        --color10: #111111;
+    }
+
+    body {
+        display: flex;
+    }
+
+    .sss {
+        color: blue;
+        font-weight: bold;
+        width: 100px;
+        height: 100px;
+
+        background-color: var(--color3)
+    }
+
+    .sss:nth-child(odd) {
+        background-color: var(--color4)
+    }
+</style>
+
+<body>
+    <script>
+
+        function createElement(content) {
+            var element = document.createElement('div');
+            element.innerHTML = content;
+            element.classList.add('sss');
+            document.body.appendChild(element);
+            return element;
+        }
+
+        function getRandom(s, e) {
+            return Math.floor(Math.random() * (e - s) + s);
+        }
+        for (var i = 0; i < 10; i++) {
+            createElement(getRandom(2, 7));
+        }
+
+        function 딩동울리기(n) {  //딩동 울리기 1번은 딩동 2번은 환희.mp3 
+            const audio1 = new Audio('audio/dingdong.mp3');
+            const audio2 = new Audio('audio/환희.mp3');
+            const audio3 = new Audio('audio/땡.wav');
+
+            switch (n) {
+                case 1:
+                    audio1.play();
+                    break;
+                case 2:
+                    audio2.play();
+                    break;
+                case 3:
+                    audio3.play();
+                    break;
+                default:
+                    break;
+
+            }
+        }
+    </script>
+</body>
+
+</html>
