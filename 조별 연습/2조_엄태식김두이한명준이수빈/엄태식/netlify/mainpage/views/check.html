@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 92vh;
+      }
+      .checkbox {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 10px;
+        border: 1px solid black;
+        cursor: pointer;
+        background-image: url("/public/images/ice.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .boxes {
+        width: 75vw;
+        height: 40vh;
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+      }
+      .title {
+        font-size: 6vh;
+      }
+      .label {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        padding: 2px;
+        font-size: 15px;
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        border-radius: 8px;
+
+        user-select: none; /* 드래그 비활성화 */
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $.ajax({
+          url: "/public/header.html",
+          method: "GET",
+          success: function (res) {
+            $("#header").html(res);
+          },
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="header"></div>
+    <div class="container">
+      <p class="title">다 했니?</p>
+      <div class="boxes"></div>
+    </div>
+  </body>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      var checkboxesContainer = document.querySelector(".boxes");
+
+      for (var i = 1; i <= 22; i++) {
+        var checkbox = document.createElement("div");
+        checkbox.className = "checkbox";
+        checkbox.innerHTML = '<div class="label">' + i + "번</div>";
+
+        checkboxesContainer.appendChild(checkbox);
+      }
+
+      var checkboxes = document.querySelectorAll(".checkbox");
+      var checkboxStates = Array.from(checkboxes).map(() => ({
+        clickCount: 0,
+      }));
+
+      function check(e) {
+        var targetCheckbox = e.target;
+        var index = Array.from(checkboxes).indexOf(targetCheckbox);
+        var checkboxState = checkboxStates[index];
+        checkboxState.clickCount += 1;
+
+        if (checkboxState.clickCount % 3 === 0) {
+          targetCheckbox.style.backgroundImage =
+            "url('/public/images/ice.png')";
+        } else if (checkboxState.clickCount % 3 === 1) {
+          targetCheckbox.style.backgroundImage =
+            "url('/public/images/fullice.png')";
+        } else if (checkboxState.clickCount % 3 === 2) {
+          targetCheckbox.style.backgroundImage =
+            "url('/public/images/smile.jpg')";
+        }
+      }
+
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("click", check);
+      });
+    });
+  </script>
+</html>

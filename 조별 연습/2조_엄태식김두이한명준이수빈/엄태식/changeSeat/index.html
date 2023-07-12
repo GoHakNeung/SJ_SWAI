@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    #stuname {
+      height: 500px;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <form action="/stuname" method="GET">
+        <textarea name="stuname" id="stuname" cols="10" rows="30"></textarea>
+        <button type="button" onclick="saveData()">전송하기</button>
+      </form>
+    </div>
+
+    <script>
+      function saveData() {
+        const stuname = document.getElementById("stuname").value;
+        const stunameArray = stuname.split("\n");
+        for (i = 0; i < stunameArray.length; i++) {
+          if (stunameArray[i] == "") {
+            stunameArray.splice(i, 1);
+            i--;
+          }
+        }
+        console.log(stunameArray);
+        localStorage.setItem("stunameArray", JSON.stringify(stunameArray));
+        console.log(JSON.stringify(stunameArray));
+        window.location.href = "changeSeat.html";
+      }
+    </script>
+  </body>
+</html>

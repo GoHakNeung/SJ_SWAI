@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      height: 92vh;
+    }
+    .seat {
+      width: 100px;
+      height: 50px;
+      border: 1px solid black;
+      background-color: skyblue;
+      text-align: center;
+      font-size: large;
+      margin: 10px;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+
+      margin: 10px;
+    }
+    #start {
+      height: 50px;
+    }
+    #reset {
+      height: 50px;
+    }
+    #countdown {
+      font-size: 15rem;
+      position: absolute;
+      left: 40vw;
+      top: 40vh;
+    }
+    .none {
+      display: none;
+    }
+    .hide {
+      color: skyblue;
+    }
+    .howto {
+      font-size: 3rem;
+      position: relative;
+      user-select: none; /* 드래그 비활성화 */
+    }
+    .howtotip {
+      font-size: 1rem;
+      position: absolute;
+      width: 310px;
+      left: 30px;
+      top: -90px;
+      border: 1px dotted black;
+      background-color: white;
+      padding: 5px;
+      border-radius: 15px;
+    }
+  </style>
+  <link rel="stylesheet" href="../public/main.css" />
+  <body>
+    <nav class="navbar">
+      <a id="menu-icon" class="bi bi-list" href="#"></a>
+      <div class="logo_icon">
+        <a class="bi bi-house-door" href="index.html"> 프로그래밍 분과</a>
+      </div>
+    </nav>
+    <nav id="navbar" class="navbar-items">
+      <a class="bi bi-hourglass" href="timer.html" id="timer-link">
+        <span class="tooltip">타이머</span>
+      </a>
+      <a class="bi bi-people-fill" href="changeSeat.html" id="changeSeat-link">
+        <span class="tooltip">자리바꾸기</span>
+      </a>
+      <a class="bi bi-bookmark-check" href="check.html" id="check-link">
+        <span class="tooltip">체크하기</span>
+      </a>
+      <a class="bi bi-bell-slash" href="noiseCheck.html" id="noiseCheck-link">
+        <span class="tooltip">소음체크하기</span>
+      </a>
+      <a class="bi bi-clipboard" href="board.html" id="board-link">
+        <span class="tooltip">칠판</span>
+      </a>
+    </nav>
+    <div id="header"></div>
+    <div class="container" style="padding-top: 30vh; height: 500px">
+      <div class="howto">
+        ⚠️
+        <div class="howtotip none">
+          오른쪽 목록에 이름을 엔터로 구분하여 입력하고, 원하는 칸에 고정할
+          학생의 이름을 똑같이 칩니다. 동명이인의 경우 1, 2로 구분해주세요.
+        </div>
+      </div>
+
+      <div class="main">
+        <input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input
+          type="text"
+          class="seat"
+        /><input type="text" class="seat" /><input type="text" class="seat" />
+      </div>
+      <textarea name="stulist" id="stulist" cols="10" rows="30"></textarea>
+      <button id="start">자리만들기</button>
+      <button id="reset">리셋</button>
+    </div>
+  </body>
+  <script>
+    var seat = document.getElementsByClassName("seat");
+    var stuName = [];
+    var startBtn = document.getElementById("start");
+    var resetBtn = document.getElementById("reset");
+    startBtn.addEventListener("click", start);
+    resetBtn.addEventListener("click", reset);
+    var howTo = document.querySelector(".howto");
+    var howtoTip = document.querySelector(".howtotip");
+    howTo.addEventListener("mouseover", seeHowto);
+    howTo.addEventListener("mouseout", dontseeHowto);
+
+    function seeHowto() {
+      howtoTip.classList.remove("none");
+    }
+    function dontseeHowto() {
+      howtoTip.classList.add("none");
+    }
+
+    var indexes = [];
+    var enteredValues = [];
+    var newenteredValues = [];
+    function reset() {
+      for (i = 0; i < 30; i++) {
+        seat[i].value = "";
+      }
+    }
+
+    function inputCheck() {
+      for (i = 0; i < stuName.length; i++) {
+        enteredValues = Array.from(seat, function (input) {
+          return input.value;
+        });
+        enteredValues.includes(stuName[i]);
+        console.log("enteredValues: " + enteredValues);
+        newenteredValues = enteredValues.filter((item) => {
+          return item !== "";
+          true;
+        });
+        console.log("newenteredValues: " + newenteredValues);
+        stuName = stuName.filter((x) => !newenteredValues.includes(x));
+        // stuName = stuName.filter((x) => !enteredValues.includes(x));
+      }
+      for (i = 0; i < indexes.length; i++) {}
+
+      console.log("stuName: " + stuName);
+    }
+
+    function stuList() {
+      var stulist = document.getElementById("stulist").value;
+      stuName = stulist.split("\n").filter((item) => item.trim() !== "");
+    }
+    function start() {
+      for (var i = 0; i < seat.length; i++) {
+        seat[i].style.color = "skyblue";
+      }
+      var countdownElement = document.createElement("div");
+      countdownElement.id = "countdown";
+      document.getElementsByClassName("main")[0].appendChild(countdownElement);
+
+      var count = 5;
+      var countdownInterval = setInterval(function () {
+        countdownElement.textContent = count;
+        count--;
+
+        if (count < 0) {
+          clearInterval(countdownInterval);
+          countdownElement.classList.add("none");
+        }
+      }, 1000);
+      setTimeout(function () {
+        stuList();
+        inputCheck();
+
+        var availableIndexes = [...Array(stuName.length).keys()];
+        console.log("availableIndexes: " + availableIndexes);
+        console.log("stuName: " + stuName);
+        for (i = 0; i < stuName.length + newenteredValues.length; i++) {
+          var randomIndex = Math.floor(Math.random() * availableIndexes.length);
+          console.log("randomIndex: " + randomIndex);
+          if (!seat[i].value) {
+            var selectedIndex = availableIndexes.splice(randomIndex, 1)[0];
+
+            console.log("selectedIndex: " + selectedIndex);
+            seat[i].value = stuName[selectedIndex];
+            console.log(stuName[selectedIndex]);
+          }
+        }
+        for (var i = 0; i < seat.length; i++) {
+          seat[i].style.color = "black";
+        }
+      }, 6000);
+    }
+  </script>
+
+  <script src="main.js"></script>
+</html>

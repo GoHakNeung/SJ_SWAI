@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* 
+
+    
+
+    .stuList {
+      border: 1px solid green;
+      flex-grow: 0.8;
+      flex-direction: column;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    header {
+      border: 1px solid red;
+      width: 100%;
+      height: 10vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 50px;
+    }
+    .container {
+      border: 1px solid blue;
+      display: flex;
+      flex-direction: row;
+    }
+  
+
+    
+    
+    .class {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 9.2;
+      justify-content: center;
+      align-items: center;
+    } */
+
+    .seat.on::after {
+      content: attr(data-name);
+    }
+  </style>
+  <body>
+    <header>자리 바꾸기 프로그램</header>
+    <div class="container">
+      <div class="sidebar">
+        <ul id="stunameList"></ul>
+      </div>
+      <div class="main-content">
+        <div class="class-front">칠 판</div>
+        <div class="seats">
+          <div class="seat" id="seat1"></div>
+          <div class="seat" id="seat2"></div>
+          <div class="seat" id="seat3"></div>
+          <div class="seat" id="seat4"></div>
+          <div class="seat" id="seat5"></div>
+          <div class="seat" id="seat6"></div>
+          <div class="seat" id="seat7"></div>
+          <div class="seat" id="seat8"></div>
+          <div class="seat" id="seat9"></div>
+          <div class="seat" id="seat10"></div>
+          <div class="seat" id="seat11"></div>
+          <div class="seat" id="seat12"></div>
+          <div class="seat" id="seat13"></div>
+          <div class="seat" id="seat14"></div>
+          <div class="seat" id="seat15"></div>
+          <div class="seat" id="seat16"></div>
+          <div class="seat" id="seat17"></div>
+          <div class="seat" id="seat18"></div>
+          <div class="seat" id="seat19"></div>
+          <div class="seat" id="seat20"></div>
+          <div class="seat" id="seat21"></div>
+          <div class="seat" id="seat22"></div>
+          <div class="seat" id="seat23"></div>
+          <div class="seat" id="seat24"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.onload = function () {
+        const stunameArray = JSON.parse(localStorage.getItem("stunameArray"));
+        const stunameList = document.getElementById("stunameList");
+
+        stunameArray.forEach((stuname) => {
+          const listItem = document.createElement("li");
+          listItem.classList.add("name");
+          listItem.textContent = stuname;
+          listItem.draggable = true;
+          stunameList.appendChild(listItem);
+          listItem.addEventListener("dragstart", dragStart);
+        });
+
+        var seatBox = document.getElementsByClassName("seat");
+
+        var seatArray = Array.from(seatBox);
+
+        seatArray.forEach(function (seat) {
+          seat.addEventListener("dragover", dragOver);
+          seat.addEventListener("drop", drop);
+        });
+
+        let draggedItem = null;
+        function dragStart(e) {
+          draggedItem = e.target;
+          e.dataTransfer.setData("text/plain", draggedItem.dataset.name);
+        }
+
+        function dragOver(e) {
+          e.preventDefault();
+        }
+
+        function drop(e) {
+          e.preventDefault();
+          const name = e.dataTransfer.getData("text/plain");
+          const seat = e.target;
+
+          if (
+            seat.classList.contains("seat") &&
+            !seat.classList.contains("on")
+          ) {
+            seat.classList.add("on");
+            seat.dataset.name = name;
+
+            const listItem = document.querySelector(`li[data-name="${name}"]`);
+            if (listItem.parentNode) {
+              listItem.parentNode.removeChild(listItem);
+            }
+          }
+        }
+      };
+
+      var seatBox = document.getElementsByClassName("seat");
+
+      // seatBox를 배열로 변환
+      var seatArray = Array.from(seatBox);
+
+      // 각 seat 요소에 클릭 이벤트 핸들러를 추가
+      seatArray.forEach(function (seat) {
+        seat.addEventListener("click", seatOn);
+      });
+
+      function seatOn(e) {
+        e.target.classList.toggle("on");
+      }
+    </script>
+  </body>
+</html>

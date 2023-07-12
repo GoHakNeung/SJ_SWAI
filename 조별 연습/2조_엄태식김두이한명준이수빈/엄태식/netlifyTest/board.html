@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../public/main.css" />
+    <style>
+      #taskbar {
+        position: absolute;
+        top: 100px;
+        left: 100px;
+        width: 400px;
+        height: 50px;
+        background-color: #ccc;
+        cursor: move;
+        user-select: none; /* 드래그 비활성화 */
+      }
+
+      #content {
+        position: absolute;
+        top: 120px;
+        left: 100px;
+      }
+
+      #content textarea {
+        width: 400px;
+        height: 200px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <a id="menu-icon" class="bi bi-list" href="#"></a>
+      <div class="logo_icon">
+        <a class="bi bi-house-door" href="index.html"> 프로그래밍 분과</a>
+      </div>
+    </nav>
+    <nav id="navbar" class="navbar-items">
+      <a class="bi bi-hourglass" href="timer.html" id="timer-link">
+        <span class="tooltip">타이머</span>
+      </a>
+      <a class="bi bi-people-fill" href="changeSeat.html" id="changeSeat-link">
+        <span class="tooltip">자리바꾸기</span>
+      </a>
+      <a class="bi bi-bookmark-check" href="check.html" id="check-link">
+        <span class="tooltip">체크하기</span>
+      </a>
+      <a class="bi bi-bell-slash" href="noiseCheck.html" id="noiseCheck-link">
+        <span class="tooltip">소음체크하기</span>
+      </a>
+      <a class="bi bi-clipboard" href="board.html" id="board-link">
+        <span class="tooltip">칠판</span>
+      </a>
+    </nav>
+    <div id="header"></div>
+    <div id="taskbar">
+      여기를 잡고 옮기세요
+      <button id="fontsizeup">A</button>
+      <button id="fontsizedown">a</button>
+    </div>
+    <div id="content">
+      <textarea id="textarea"></textarea>
+    </div>
+  </body>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const taskbar = document.getElementById("taskbar");
+      const content = document.getElementById("content");
+      const fsu = document.getElementById("fontsizeup");
+      const fsd = document.getElementById("fontsizedown");
+      const textarea = document.getElementById("textarea");
+
+      textarea.style.fontSize = "14px"; // 초기 폰트 크기 설정
+
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      taskbar.addEventListener("mousedown", startDrag);
+      taskbar.addEventListener("mousemove", drag);
+      taskbar.addEventListener("mouseup", endDrag);
+      taskbar.addEventListener("touchstart", startDrag, { passive: false });
+      taskbar.addEventListener("touchmove", drag, { passive: false });
+      taskbar.addEventListener("touchend", endDrag, { passive: false });
+      fsu.addEventListener("click", fontSizeUp);
+      fsu.addEventListener("mousedown", startFontSizeUpInterval);
+      fsu.addEventListener("mouseup", stopFontSizeUpInterval);
+      fsu.addEventListener("mouseleave", stopFontSizeUpInterval);
+
+      fsd.addEventListener("click", fontSizeDown);
+      fsd.addEventListener("mousedown", startFontSizeDownInterval);
+      fsd.addEventListener("mouseup", stopFontSizeDownInterval);
+      fsd.addEventListener("mouseleave", stopFontSizeDownInterval);
+
+      function startFontSizeUpInterval() {
+        fontSizeUp(); // 클릭 이벤트에 대한 즉각적인 호출
+        fsuInterval = setInterval(fontSizeUp, 100); // 200ms 간격으로 반복 호출
+      }
+
+      function stopFontSizeUpInterval() {
+        clearInterval(fsuInterval); // setInterval 멈춤
+      }
+
+      function startFontSizeDownInterval() {
+        fontSizeDown(); // 클릭 이벤트에 대한 즉각적인 호출
+        fsdInterval = setInterval(fontSizeDown, 100); // 200ms 간격으로 반복 호출
+      }
+
+      function stopFontSizeDownInterval() {
+        clearInterval(fsdInterval); // setInterval 멈춤
+      }
+      function startDrag(e) {
+        e.preventDefault(); // 마우스 이벤트에서 선택 텍스트 방지
+        isDragging = true;
+        offsetX = e.clientX - taskbar.offsetLeft;
+        offsetY = e.clientY - taskbar.offsetTop;
+      }
+
+      function endDrag() {
+        isDragging = false;
+      }
+
+      function drag(e) {
+        if (isDragging) {
+          const newX = e.clientX - offsetX;
+          const newY = e.clientY - offsetY;
+          taskbar.style.left = newX + "px";
+          taskbar.style.top = newY + "px";
+          content.style.left = newX + "px";
+          content.style.top = newY + taskbar.offsetHeight + "px";
+        }
+      }
+
+      function fontSizeUp() {
+        var currentFontSize = parseInt(
+          textarea.style.getPropertyValue("font-size")
+        ); // 현재 폰트 크기 가져오기
+        var newFontSize = currentFontSize + 2; // 새로운 폰트 크기 계산
+        textarea.style.setProperty("font-size", newFontSize + "px"); // 새로운 폰트 크기 설정
+      }
+
+      function fontSizeDown() {
+        var currentFontSize = parseInt(
+          textarea.style.getPropertyValue("font-size")
+        ); // 현재 폰트 크기 가져오기
+        var newFontSize = currentFontSize - 2; // 새로운 폰트 크기 계산
+        textarea.style.setProperty("font-size", newFontSize + "px"); // 새로운 폰트 크기 설정
+      }
+    });
+  </script>
+
+  <script src="main.js"></script>
+</html>

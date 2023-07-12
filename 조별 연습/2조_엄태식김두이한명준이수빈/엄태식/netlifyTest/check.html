@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 92vh;
+      }
+      .checkbox {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 10px;
+        border: 1px solid black;
+        cursor: pointer;
+        background-image: url("../public/images/X.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .boxes {
+        width: 75vw;
+        height: 40vh;
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+      }
+      .title {
+        font-size: 6vh;
+      }
+      .label {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        padding: 2px;
+        font-size: 15px;
+        background-color: white;
+        color: black;
+        border: 1px solid black;
+        border-radius: 8px;
+
+        user-select: none; /* 드래그 비활성화 */
+      }
+      #myCombo {
+        font-size: 6vh;
+        background-color: lightgray;
+        border: 0px;
+        appearance: none;
+        text-align: center;
+        color: green;
+      }
+      #personCount {
+        display: inline-block;
+        background-color: lightgray;
+        width: 40px;
+        height: 25px;
+        border: 0px;
+        font-size: 22px;
+      }
+    </style>
+  </head>
+  <link rel="stylesheet" href="../public/main.css" />
+  <body>
+    <nav class="navbar">
+      <a id="menu-icon" class="bi bi-list" href="#"></a>
+      <div class="logo_icon">
+        <a class="bi bi-house-door" href="index.html"> 프로그래밍 분과</a>
+      </div>
+    </nav>
+    <nav id="navbar" class="navbar-items">
+      <a class="bi bi-hourglass" href="timer.html" id="timer-link">
+        <span class="tooltip">타이머</span>
+      </a>
+      <a class="bi bi-people-fill" href="changeSeat.html" id="changeSeat-link">
+        <span class="tooltip">자리바꾸기</span>
+      </a>
+      <a class="bi bi-bookmark-check" href="check.html" id="check-link">
+        <span class="tooltip">체크하기</span>
+      </a>
+      <a class="bi bi-bell-slash" href="noiseCheck.html" id="noiseCheck-link">
+        <span class="tooltip">소음체크하기</span>
+      </a>
+      <a class="bi bi-clipboard" href="board.html" id="board-link">
+        <span class="tooltip">칠판</span>
+      </a>
+    </nav>
+    <div id="header"></div>
+    <div class="container">
+      <div>
+        <label for="personCount">우리 반은 </label>
+        <input
+          type="number"
+          id="personCount"
+          min="0"
+          onchange="updateCheckboxCount()"
+        />명
+      </div>
+      <p class="title">
+        <select id="myCombo" onchange="resetClickCounts()">
+          <option value="option1">우유 먹기</option>
+          <option value="option2">내야 될 것</option>
+          <option value="option3">할 일</option>
+        </select>
+        &nbsp;다 했니?
+      </p>
+
+      <div class="boxes"></div>
+    </div>
+
+    <audio id="sound" src="../public/sounds/tadah.mp3"></audio>
+    <!-- 추가: 음악 파일을 재생할 <audio> 요소 -->
+
+    <script>
+      var checkboxesContainer = document.querySelector(".boxes");
+      var checkboxes = [];
+      var checkboxStates = [];
+      var sound = document.getElementById("sound"); // 추가: 음악을 재생할 <audio> 요소
+
+      function createCheckboxes(count) {
+        checkboxesContainer.innerHTML = ""; // 기존의 체크박스들 제거
+
+        for (var i = 1; i <= count; i++) {
+          var checkbox = document.createElement("div");
+          checkbox.className = "checkbox";
+          checkbox.innerHTML = '<div class="label">' + i + "번</div>";
+
+          checkboxesContainer.appendChild(checkbox);
+          checkboxes.push(checkbox);
+          checkboxStates.push({ clickCount: 0 });
+        }
+
+        checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener("click", check);
+        });
+      }
+
+      function check(e) {
+        var targetCheckbox = e.target;
+        var index = checkboxes.indexOf(targetCheckbox);
+        var checkboxState = checkboxStates[index];
+        checkboxState.clickCount += 1;
+
+        if (checkboxState.clickCount % 3 === 0) {
+          targetCheckbox.style.backgroundImage =
+            "url('../public/images/X.png')";
+        } else if (checkboxState.clickCount % 3 === 1) {
+          targetCheckbox.style.backgroundImage =
+            "url('../public/images/O.png')";
+
+          sound.play(); // 추가: 음악 재생
+        } else if (checkboxState.clickCount % 3 === 2) {
+          targetCheckbox.style.backgroundImage =
+            "url('../public/images/slash.png')";
+        }
+      }
+
+      var myCombo = document.getElementById("myCombo");
+
+      // 옵션 선택 시 값을 저장
+      myCombo.addEventListener("change", function () {
+        var selectedValue = myCombo.value;
+        localStorage.setItem("selectedOption", selectedValue);
+      });
+      var storedOption = localStorage.getItem("selectedOption");
+      if (storedOption) {
+        myCombo.value = storedOption;
+      }
+      function resetClickCounts() {
+        checkboxStates.forEach(function (checkboxState) {
+          checkboxState.clickCount = 0;
+        });
+
+        updateCheckboxCount();
+      }
+
+      function updateCheckboxCount() {
+        var personCount = document.getElementById("personCount").value;
+        createCheckboxes(personCount);
+      }
+
+      window.addEventListener("DOMContentLoaded", function () {
+        updateCheckboxCount();
+      });
+    </script>
+
+    <script src="main.js"></script>
+  </body>
+</html>

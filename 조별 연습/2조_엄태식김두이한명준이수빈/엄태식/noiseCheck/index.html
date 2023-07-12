@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .hide {
+      display: none !important;
+    }
+    .progress {
+      width: 80vh;
+      height: 30px;
+      background-color: lightgray;
+    }
+    .bar {
+      background-color: yellow;
+      height: 30px;
+    }
+    .volume {
+      height: 50px;
+    }
+    .no {
+      color: red;
+      font-size: 200px;
+    }
+    img {
+      width: 150px;
+      height: 200px;
+    }
+  </style>
+  <body>
+    <div class="progress">
+      <div class="bar"></div>
+    </div>
+    <div class="volume"></div>
+    <img src="1.jpg" alt="" id="image" />
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+
+    <script>
+      let audioContext;
+      let mediaStreamSource;
+      let analyser;
+
+      // Start 버튼 클릭 이벤트 핸들러
+      document.getElementById("startButton").addEventListener("click", () => {
+        // 브라우저 지원 여부 확인
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          console.log("getUserMedia is not supported in this browser");
+          return;
+        }
+
+        // AudioContext 생성
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // getUserMedia를 통해 마이크 입력 가져오기
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            // MediaStreamAudioSourceNode 생성
+            mediaStreamSource = audioContext.createMediaStreamSource(stream);
+
+            // AnalyserNode 생성
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048; // FFT 크기 설정
+
+            // 연결 설정
+            mediaStreamSource.connect(analyser);
+
+            // 크기 측정 함수 호출
+            measureVolume();
+          })
+          .catch((error) => {
+            console.log("Error accessing microphone:", error);
+          });
+      });
+
+      // Stop 버튼 클릭 이벤트 핸들러
+      document.getElementById("stopButton").addEventListener("click", () => {
+        // 연결 해제 및 리소스 정리
+        if (mediaStreamSource) {
+          mediaStreamSource.disconnect();
+          mediaStreamSource = null;
+        }
+
+        if (analyser) {
+          analyser.disconnect();
+          analyser = null;
+        }
+
+        if (audioContext) {
+          audioContext.close();
+          audioContext = null;
+        }
+      });
+
+      // 소리 크기 측정 함수
+      function measureVolume() {
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(dataArray);
+
+        // 크기 계산
+        const volume =
+          dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+
+        // volumeNum.innerText(volume);
+
+        document.querySelector(".volume").innerText = "소음공해수치: " + volume;
+        var bar = document.querySelector(".bar");
+        bar.setAttribute("style", "width:" + volume + "%");
+        // 일정 간격마다 크기 측정 함수 호출
+
+        var image = document.querySelector("#image");
+        if (volume <= 0) {
+          image.src = "1.jpg";
+        } else if (volume < 30) {
+          image.src = "2.jpg";
+        } else if (volume < 60) {
+          image.src = "3.jpg";
+        } else if (volume < 90) {
+          image.src = "4.jpg";
+        } else if (volume < 110) {
+          image.src = "5.jpg";
+        } else if (volume >= 110) {
+          image.src = "6.jpg";
+        }
+        requestAnimationFrame(measureVolume);
+      }
+    </script>
+  </body>
+</html>

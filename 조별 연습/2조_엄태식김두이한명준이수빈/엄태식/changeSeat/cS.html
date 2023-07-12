@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-content: center;
+    }
+    .seat {
+      width: 100px;
+      height: 50px;
+      border: 1px solid black;
+      background-color: skyblue;
+      text-align: center;
+      font-size: large;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+    div {
+      margin: 10px;
+    }
+    #start {
+      height: 50px;
+    }
+    #reset {
+      height: 50px;
+    }
+  </style>
+  <body>
+    <div class="main">
+      <input type="text" class="seat" /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" /><input
+        type="text"
+        class="seat"
+      /><input type="text" class="seat" />
+    </div>
+    <textarea name="stulist" id="stulist" cols="10" rows="30"></textarea>
+    <button id="start">자리만들기</button>
+    <button id="reset">리셋</button>
+  </body>
+  <script>
+    var seat = document.getElementsByClassName("seat");
+    var stuName = [];
+    var startBtn = document.getElementById("start");
+    var resetBtn = document.getElementById("reset");
+    startBtn.addEventListener("click", start);
+    resetBtn.addEventListener("click", reset);
+
+    var indexes = [];
+    var enteredValues = [];
+    var newenteredValues = [];
+    function reset() {
+      for (i = 0; i < 30; i++) {
+        seat[i].value = "";
+      }
+    }
+
+    function inputCheck() {
+      for (i = 0; i < stuName.length; i++) {
+        enteredValues = Array.from(seat, function (input) {
+          return input.value;
+        });
+        enteredValues.includes(stuName[i]);
+        console.log("enteredValues: " + enteredValues);
+        newenteredValues = enteredValues.filter((item) => {
+          return item !== "";
+          true;
+        });
+        console.log("newenteredValues: " + newenteredValues);
+        stuName = stuName.filter((x) => !newenteredValues.includes(x));
+        // stuName = stuName.filter((x) => !enteredValues.includes(x));
+      }
+      for (i = 0; i < indexes.length; i++) {}
+
+      console.log("stuName: " + stuName);
+    }
+
+    function stuList() {
+      var stulist = document.getElementById("stulist").value;
+      stuName = stulist.split("\n");
+      for (i = 0; i < stuName.length; i++) {
+        if (stuName[i] == "") {
+          stuName.splice(i, 1);
+        }
+      }
+    }
+
+    function start() {
+      stuList();
+      inputCheck();
+
+      var availableIndexes = [...Array(stuName.length).keys()];
+      console.log("availableIndexes: " + availableIndexes);
+      console.log("stuName: " + stuName);
+      for (i = 0; i < stuName.length + newenteredValues.length; i++) {
+        var randomIndex = Math.floor(Math.random() * availableIndexes.length);
+        console.log("randomIndex: " + randomIndex);
+        if (!seat[i].value) {
+          var selectedIndex = availableIndexes.splice(randomIndex, 1)[0];
+
+          console.log("selectedIndex: " + selectedIndex);
+          seat[i].value = stuName[selectedIndex];
+          console.log(stuName[selectedIndex]);
+        }
+      }
+
+      // for (var i = seat.length - 1; i >= 0; i--) {
+      //   if (seat[i].value === "") {
+      //     seat[i].remove();
+      //   }
+      // }
+    }
+  </script>
+</html>

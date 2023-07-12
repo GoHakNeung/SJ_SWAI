@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center; /* 요소들을 수직으로 가운데 정렬 */
+      }
+
+      .container {
+        width: 50%;
+        height: 100%;
+        padding: 30px;
+        background-color: lightcyan;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center; /* 요소들을 수직으로 가운데 정렬 */
+      }
+      .boxes {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .box {
+        margin: 5px;
+        height: 100px;
+        width: 100px;
+        background-color: white;
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        border-radius: 12px;
+      }
+      .box:hover {
+        border-color: #ff0000;
+        transform: scale(1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <h1>우유 다 먹었니?</h1>
+        <input type="text" id="stuNum" />
+        <button type="button" id="start">만들기</button>
+      </div>
+      <div class="boxes"></div>
+    </div>
+  </body>
+  <script>
+    var stuNum = document.getElementById("stuNum");
+    var boxesContainer = document.getElementsByClassName("boxes")[0];
+    var startButton = document.getElementById("start");
+
+    startButton.addEventListener("click", makeBox);
+
+    function makeBox() {
+      var num = parseInt(stuNum.value);
+      var boxes = document.querySelectorAll(".box");
+
+      boxes.forEach(function (box) {
+        box.remove();
+      });
+
+      for (i = 0; i < num; i++) {
+        var box = document.createElement("div");
+        box.classList.add("box");
+        box.innerText = i + 1;
+
+        box.style.backgroundColor = "white";
+        box.addEventListener("click", changeColor); // 각 .box 요소에 이벤트 리스너 등록
+        boxesContainer.appendChild(box);
+      }
+    }
+
+    function changeColor(e) {
+      var box = e.target;
+
+      if (box.classList.contains("box")) {
+        if (box.style.backgroundColor === "white") {
+          box.style.backgroundColor = "red";
+        } else {
+          box.style.backgroundColor = "white";
+        }
+      }
+    }
+  </script>
+</html>
