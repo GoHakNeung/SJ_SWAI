@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sound Level Meter</title>
+    <style>
+        #graph {
+            width: 20px;
+            height: 200px;
+            background-color: lightgray;
+            position: relative;
+            margin: 10px;
+        }
+
+        #bar {
+            width: 100%;
+            background-color: green;
+            position: absolute;
+            bottom: 0;
+        }
+
+
+
+        #line-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .graph {
+            width: 100%;
+            height: 200px;
+            border: 1px solid black;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+
+        .box {
+            width: 100%;
+            height: 100%;
+            border-bottom: 10px solid orange;
+            border-top: 10px solid orange;
+
+        }
+        .box:first-child{
+            display: none;;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <canvas id="line-chart" width="1500" height="200"></canvas>
+    </div>
+    <div class="box">
+        <canvas id="game" width="1900" height="400"></canvas>
+    </div>
+
+
+    <div id="bar"></div>
+
+
+
+
+    <label for sencer id="label1">민감도 (1.5)</label>
+    <input id='sencer' type="range" min="1.0" max="2.0" step="0.1" value="1.5" onchange="updateSensitivity()">
+
+    <p>현재 dB: <span id="dbValue">0</span></p>
+    <p>1분 평균 dB: <span id="avgDb">0</span></p>
+    <p>현재 에너지 <span id="energy">100</span></p>
+
+
+
+
+
+    <script>
+        //소리변수 
+        var 데시벨;
+        var canvas1 = document.getElementById('line-chart');
+        var ctx1 = canvas1.getContext('2d');
+        var canvas2 = document.getElementById('game');
+        var ctx2 = canvas2.getContext('2d');
+        var eText = document.getElementById('energy');
+        var label1 = document.getElementById('label1');
+        var filteredHistory;
+        var averageDecibel;
+        var sensitivity = 1.5
+        //게임 변수
+        var img = new Image();
+        img.src = '우주인1.png'
+        img.onload = function () {
+            // 이미지 로드 완료
+        }
+        let blocks = [];
+        let blockWidth = 50;
+        let blockHeight = 50;
+        let blockSpeed = 6;
+        let maxTime = 2000;
+        let minTime = 500;
+        let energy = 100;
+
+        navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then(function (stream) {
+                // 오디오 소스 생성
+                var audioContext = new (window.AudioContext ||
+                    window.webkitAudioContext)();
+                var audioSource = audioContext.createMediaStreamSource(stream);
+
+                // 분석기 생성
+                var analyser = audioContext.createAnalyser();
+                audioSource.connect(analyser);
+
+
+                // 분석기 설정
+                analyser.fftSize = 2048; // FFT 크기
+                var bufferLength = analyser.fftSize;
+                var dataArray = new Uint8Array(bufferLength);
+                averageDecibel = 0;
+                var averageDecibelHistory = [];
+                var bar = document.getElementById('bar');
+                var currentDB = document.getElementById('dbValue');
+                var avgDB = document.getElementById('avgDb');
+                var lengthData = document.getElementById('lenghtData');
+
+
+                function calculateDb() {
+                    requestAnimationFrame(calculateDb);
+
+                    analyser.getByteTimeDomainData(dataArray);
+
+                    //평균 db측정
+                    var totalDecibel = 0;
+                    for (var i = 0; i < bufferLength; i++) {
+                        totalDecibel += Math.abs(dataArray[i] - 128);
+                    }
+                    averageDecibel = totalDecibel / bufferLength;
+
+                    // 최근 1분간의 최대 데시벨 평균 계산
+                    averageDecibelHistory.push(averageDecibel);
+                    if (averageDecibelHistory.length > 600) averageDecibelHistory.shift();
+                    var currentTime = new Date().getTime();
+                    var startTime = currentTime - 60 * 100; // 6초 전의 시간
+                    var filteredHistory = averageDecibelHistory.filter(function (
+                        value
+                    ) {
+                        return value !== undefined;
+                    });
+                    var recentAverageDecibel = filteredHistory.reduce(function (sum, value) {
+                        return sum + value;
+                    }, 0) / filteredHistory.length;
+
+                    데시벨 = toDb(averageDecibel)
+
+                    var 평균데시벨 = toDb(recentAverageDecibel)
+
+
+                    drawBoxGraph(데시벨);
+                    drawGraph(averageDecibelHistory);
+
+
+                    currentDB.innerText = 데시벨.toFixed(2) + " dB";
+                    avgDB.innerText = 평균데시벨.toFixed(2) + " dB";
+
+                }
+                function toDb(value) {
+                    return 55 + 50 * Math.log10(value);
+                }
+
+                function drawBoxGraph(value) {
+
+                    bar.setAttribute('style', `height:${value}px`)
+                }
+
+                calculateDb();
+
+            });
+
+
+        function drawGraph(data) {
+            const margin = 20;
+            const graphWidth = canvas1.width - margin * 2;
+            const graphHeight = canvas1.height - margin * 2;
+
+            // Find the maximum value in the data array
+            const maxValue = Math.max(...data);
+
+            // Calculate the scaling factor for the graph
+            const xScale = graphWidth / (data.length - 1);
+            const yScale = graphHeight / maxValue;
+
+            // Clear the canvas
+            ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+            ctx2.clearRect(0, 0, canvas1.width, canvas1.height);
+            // Set the line color and width
+            ctx1.strokeStyle = 'blue';
+            ctx1.lineWidth = 2;
+
+            // ctx2의 내용
+            var birdX=150;
+            var birdY = 400 - 데시벨 * sensitivity*2 
+             if(birdY < 0 ) { birdY = 0; energy -= 10}
+             const backgroundImage = new Image();
+             backgroundImage.src = "우주배경.png";
+             ctx2.drawImage(backgroundImage,0, 0, canvas2.width, canvas2.height);
+             ctx2.drawImage(img,birdX, birdY, 80, 80);
+            drawblocks();
+            for (let block of blocks) {
+
+                block.x -= blockSpeed;
+                if (block.x + block.Width < 0) {
+                    blocks.shift();
+                }
+                if (150 < block.x + block.width && 150 + 40 > block.x && birdX < block.y + block.height && birdY + 40 > block.y) {
+                    if (block.good) {energy += 1; sounds(1)}
+                    else {sounds(2); energy -= 1;}
+                    block.x = block.x - block.width + 5
+                    eText.innerText = energy;
+
+                    return false;
+                }
+                
+            }
+            // block에 닿으면 죽기 
+
+
+            // ctx1 그래프 그리기 
+            ctx1.beginPath();
+            data.forEach((value, index) => {
+                const x = index * xScale + margin;
+                const y = canvas1.height - value * yScale - margin;
+                if (index === 0) {
+                    ctx1.moveTo(x, y);
+                } else {
+                    ctx1.lineTo(x, y);
+                }
+            });
+            ctx1.stroke();
+        }
+
+        function drawblocks() {
+
+            for (let block of blocks) {
+                if (block.good == true) ctx2.fillStyle = "blue";
+                else ctx2.fillStyle = "red";
+                ctx2.fillRect(block.x, block.y, block.width, block.height);
+            }
+        }
+        function createBlock() {
+            let blockY = canvas2.height * Math.random();
+            let blockX = canvas2.width;
+            let rndWidth = 40 * (Math.random() + 0.2);
+            let rndHeight = 40 * Math.random() + 10;
+            let isGood = Math.round(Math.random() - 0.2);
+            blocks.push({ x: blockX, y: blockY, width: rndWidth, height: rndHeight, good: isGood });
+        }
+
+        function updateSensitivity() {
+            var range = document.getElementById('sencer');
+            label1.innerText = `민감도 (${range.value})`;
+            sensitivity = range.value;
+        }
+
+        function sounds(n) {  //딩동 울리기 1번은 딩동 2번은 환희.mp3 
+            const audio1 = new Audio('audio/1.mp3');
+            const audio2 = new Audio('audio/2.mp3');
+            const audio3 = new Audio('audio/3.mp3');
+
+            switch (n) {
+                case 1:
+                    audio1.play();
+                    break;
+                case 2:
+                    audio2.play();
+                    break;
+                case 3:
+                    audio3.play();
+                    break;
+                default:
+                    break;
+
+            }
+        }
+
+
+
+
+        let intervalTime = Math.random() * (maxTime - minTime) + minTime;
+        setInterval(() => {
+            createBlock()
+        }, intervalTime);
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>이미지 파일 생성</title>
+  <script>
+    function createImages() {
+      for (let i = 31; i <= 32; i++) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        const context = canvas.getContext('2d');
+        context.fillStyle = 'lightgray';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = 'black';
+        context.font = 'bold 40px Arial';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(i.toString(), canvas.width / 2, canvas.height / 2);
+
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = 'image' + i.toString() + '.png';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+  </script>
+</head>
+<body>
+  <button onclick="createImages()">이미지 생성</button>
+</body>
+</html>

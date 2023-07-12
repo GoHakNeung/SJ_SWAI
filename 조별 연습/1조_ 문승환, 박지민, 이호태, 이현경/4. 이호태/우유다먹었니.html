@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>과제 수행 여부 체크</title>
+    <style>
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+      }
+      .box {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        border: 1px solid black;
+        text-align: center;
+        line-height: 50px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        cursor: pointer;
+      }
+      .box:hover {
+        background-color: yellow;
+      }
+      .box.clicked {
+        background-color: aquamarine;
+      }
+      .box.clicked::before {
+        content: "clear";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+    </style>
+    <script>
+      function handleClick(event) {
+        event.target.classList.toggle("clicked");
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- 첫째 줄 -->
+      <div class="box" onclick="handleClick(event)">1</div>
+      <div class="box" onclick="handleClick(event)">2</div>
+      <div class="box" onclick="handleClick(event)">3</div>
+      <div class="box" onclick="handleClick(event)">4</div>
+      <div class="box" onclick="handleClick(event)">5</div>
+      <div class="box" onclick="handleClick(event)">6</div>
+      <br />
+      <!-- 둘째 줄 -->
+      <div class="box" onclick="handleClick(event)">7</div>
+      <div class="box" onclick="handleClick(event)">8</div>
+      <div class="box" onclick="handleClick(event)">9</div>
+      <div class="box" onclick="handleClick(event)">10</div>
+      <div class="box" onclick="handleClick(event)">11</div>
+      <div class="box" onclick="handleClick(event)">12</div>
+      <br />
+
+      <!-- 셋째 줄 -->
+      <div class="box" onclick="handleClick(event)">13</div>
+      <div class="box" onclick="handleClick(event)">14</div>
+      <div class="box" onclick="handleClick(event)">15</div>
+      <div class="box" onclick="handleClick(event)">16</div>
+      <div class="box" onclick="handleClick(event)">17</div>
+      <div class="box" onclick="handleClick(event)">18</div>
+      <br />
+
+      <!-- 넷째 줄 -->
+      <div class="box" onclick="handleClick(event)">19</div>
+      <div class="box" onclick="handleClick(event)">20</div>
+      <div class="box" onclick="handleClick(event)">21</div>
+      <div class="box" onclick="handleClick(event)">22</div>
+      <div class="box" onclick="handleClick(event)">23</div>
+      <div class="box" onclick="handleClick(event)">24</div>
+    </div>
+  </body>
+</html>

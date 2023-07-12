@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이상형 월드컵</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="title" id="title"></div>
+        <div class="winner" id="winner"></div>
+        <div class="boxes">
+            <div class='box' id="box1"></div>
+            <img src='images/vs.png' width:="50" height="50">
+            <div class='box' id="box2"></div>
+            <div id="vs">
+                <div>
+                </div>
+            </div>
+
+            <script>
+
+              
+
+                let match32 = []; //이미지 넣기
+                let result = []; //최종 데이터
+                let title = document.getElementById("title");
+                let winner = document.getElementById("winner");
+                let box1 = document.getElementById("box1");
+                let box2 = document.getElementById("box2");
+                title.innerHTML = "<h1>이상형 월드컵</h1>"
+                function inputImage() {
+                    for (var i = 1; i <= 32; i++) {
+                        match32.push("images/image" + i + ".png");
+                    }
+                }
+                function pickOne(a, b) {
+                    return new Promise((resolve, reject) => {
+                        box1.style.backgroundImage = "url(" + a + ")";
+                        box2.style.backgroundImage = "url(" + b + ")";
+                        box1.addEventListener("click", function handler(e) {
+
+                            box1.removeEventListener("click", handler);
+                            resolve(a);
+                        });
+                        box2.addEventListener("click", function handler(e) {
+
+                            box2.removeEventListener("click", handler);
+                            resolve(b);
+                        });
+                    });
+                }
+                async function runMatches() {
+                    let k = 0;
+                    while (match32.length > 1) { //32강
+                        let matchResult = await pickOne(match32[k], match32[k + 1]);
+                        result.push(matchResult);
+                        console.log(result);
+                        match32.splice(k, 2, matchResult);
+                        if (k + 2 >= match32.length) {
+                            k = 0;
+                        } else {
+                            k = k + 1;
+                        }
+                    }
+
+                    winner.innerHTML = `<h3>당신의 선택은</h3><br><img src='${match32[0]}' width=100 heigth=100>`;
+                }
+               
+                inputImage();
+                runMatches();
+            </script>
+</body>
+
+</html>

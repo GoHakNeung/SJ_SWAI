@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자리바꾸기</title>
+    <style>
+        .body {
+            display: block;
+            ;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fixedSeat {
+            width: 400px;
+            border: 2px solid #ccc;
+            margin: 10px;
+            padding: 20px;
+
+
+
+        }
+
+        .container {
+            width: 92vw;
+            height: 95vh;
+            display: flex;
+            background-color: antiquewhite;
+        }
+
+        .box {
+            width: 25%;
+            gap: 2px;
+            height: 100%;
+            background-color: aliceblue;
+            border: 1px solid #888;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <label for="csvFileInput">명단을 입력해 주세요</label>
+    <input type="file" id="csvFileInput" />
+    <p>
+    <div class="fixedSeat"></div>
+    <div class="container">
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+    </div>
+</body>
+
+
+<script>
+    let 학생명단 = []; // 학급의 학생명단
+    let 남자명단 = [];
+    let 여자명단 = [];
+    let 최종명단 = [];
+    let 자리바꿈조건 = 1; //1: 이성 2: 동성 3: 랜덤
+    let 전월반영 = 1 //1: 반영, 2: 반영하지 않음
+    const fixedSeat = document.getElementsByClassName('fixedSeat')[0];
+    let 고정명단 = [{ name: '윤솔희', position: 2 }, { name: '고승우', position: 25 }, { name: '김민석', position: 3 }];
+    고정명단.forEach((e) => {
+        fixedSeat.innerHTML += e.name + '를 ' + e.position + '번 자리로 이동<br>';
+    })
+
+
+
+
+
+
+    function moveElement(fullList, fixedName, fixedPosition) {
+        const index = fullList.findIndex(item => item[1] === fixedName);
+        if (index !== -1) {
+            const item = fullList.splice(index, 1)[0];
+            fullList.splice(fixedPosition, 0, item);
+            const movedItemIndex = fullList.findIndex(item => item[1] === fixedName);
+            const movedItem = fullList.splice(fixedPosition, 1)[0];
+            fullList.splice(movedItemIndex, 0, movedItem);
+        }
+        return fullList;
+    }
+
+    function readCSV(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const csvData = event.target.result;
+                const rows = csvData.split('\n');
+                const result = [];
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i].trim();
+                    if (row !== '') {
+                        const columns = row.split(',');
+                        result.push([columns[0], columns[1], columns[2]]);
+                    }
+                }
+                resolve(result);
+            };
+            reader.onerror = (event) => {
+                reject(event.target.error);
+            };
+            reader.readAsText(file);
+        });
+    }
+    // Usage example
+    const fileInput = document.getElementById('csvFileInput');
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        readCSV(file)
+            .then((csvArray) => {
+
+                //초기 학급명부 출력
+                bark(0, '<p>변경전 명단<hr>')
+                csvArray.forEach((element) => bark(0, element[0] + "번 " + element[1] + "  " + (element[2] == 1 ? '남자' : '여자') + "<br>"))
+
+                //학급명부 랜덤
+                bark(1, '<p>랜덤후 명단<hr>')
+                csvArray.sort(() => Math.random() - 0.5).forEach((element) => bark(1, element[0] + "번 " + element[1] + "  " + (element[2] == 1 ? '남자' : '여자') + "<br>"))
+
+                // 남녀별 명단만들기 
+                for (var i = 0; i < csvArray.length; i++) {
+                    if (csvArray[i][2] == 1) 남자명단.push(csvArray[i]);
+                    else 여자명단.push(csvArray[i]);
+                }
+
+
+
+
+                //최종명단에 순서대로 넣기 
+                if (자리바꿈조건 == 1) {   //이성 짝꿍일때
+                    for (var i = 0; i < csvArray.length; i++) {
+                        if (i % 2 == 0) { 최종명단.push(남자명단[0]); 남자명단.shift(); }
+                        else { 최종명단.push(여자명단[0]); 여자명단.shift(); }
+                    }
+                    if (남자명단.length > 0) 최종명단.push(...남자명단);
+                    else if (여자명단.length > 0) 최종명단.push(...여자명단);
+
+                }
+                else if (자리바꿈조건 == 2) { //동성 짝꿍일때
+                    if (남성명단.lenght % 2 == 0) 최종명단.push(...남자명단);
+                    else {
+                        var lastMan = 남성명단[남성명단.length - 1];
+                        남성명단.pop();
+                    }
+                    if (여자명단.lenght % 2 == 0) 최종명단.push(...여자명단);
+                    else {
+                        var lastGirl = 여성명단[여성명단.length - 1];
+                        여성명단.pop();
+                    }
+                    최종명단.push(lastMan);
+                    최종명단.push(lastGirl);
+                }
+
+                else if (자리바꿈조건 == 3) {
+
+                }
+
+
+                bark(2, "<p> 고정자리 변경 전 성별 최종명단<hr>")
+                for (var i = 0; i < csvArray.length; i = i + 2) {
+                    bark(2, (i / 2 + 1) + "분단:    " + 최종명단[i][1] + " | " + 최종명단[i + 1][1] + "<br>")
+                }
+
+                //고정명단의 있는 학생들의 자리를 바꿔 다시 배정    
+                고정명단.forEach((e) => { moveElement(최종명단, e.name, e.position - 1); })
+
+
+                bark(3, "<p>고정자리 변경 후 최종명단<hr>")
+                for (var i = 0; i < csvArray.length; i = i + 2) {
+                    bark(3, (i / 2 + 1) + "분단:    " + 최종명단[i][1] + " | " + 최종명단[i + 1][1] + "<br>")
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    });
+
+    function bark(n, text) {
+        var writeBox = document.getElementsByClassName('box')[n]
+        writeBox.innerHTML += text;
+    }
+
+</script>
+
+</html>
